@@ -1,0 +1,27 @@
+<RCC>
+    <qresource prefix="/icons">
+        <file>add.png</file>
+        <file>back.png</file>
+        <file>big.png</file>
+        <file>delete.png</file>
+        <file>edit.png</file>
+        <file>full.png</file>
+        <file>info.png</file>
+        <file>manage.png</file>
+        <file>next.png</file>
+        <file>open.png</file>
+        <file>picture.png</file>
+        <file>run.png</file>
+        <file>small.png</file>
+        <file>stop.png</file>
+        <file>min.png</file>
+        <file>max.png</file>
+        <file>cross.png</file>
+        <file>minus.png</file>
+        <file>restore.png</file>
+    </qresource>
+    <qresource prefix="/imgs">
+        <file>cat.gif</file>
+        <file>shasha.jpg</file>
+    </qresource>
+</RCC>

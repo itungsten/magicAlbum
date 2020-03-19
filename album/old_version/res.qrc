@@ -1,0 +1,20 @@
+<RCC>
+    <qresource prefix="/">
+        <file>full.png</file>
+        <file>picture.png</file>
+        <file>logo.ico</file>
+        <file>add.png</file>
+        <file>edit.png</file>
+        <file>info.png</file>
+        <file>open.png</file>
+        <file>manage.png</file>
+        <file>delete.png</file>
+        <file>big.png</file>
+        <file>small.png</file>
+        <file>back.png</file>
+        <file>next.png</file>
+        <file>run.png</file>
+        <file>stop.png</file>
+        <file>cat.gif</file>
+    </qresource>
+</RCC>
