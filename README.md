@@ -1,7 +1,7 @@
 # magic
 the project of magic album
 
-###viewer
+### viewer
 viewer是程序主界面，类似一个相簿
 
 ### classifier
