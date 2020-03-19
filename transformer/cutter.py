@@ -26,12 +26,5 @@ for face_location in face_locations:
     pil_image = Image.fromarray(face_image)
     #pil_image.show()
     pil_image.save("c.jpg")
-    x=input("enter 1 after your process")
-    final_pro = Image.open("c.jpg")
-    IMA = Image.open("a.jpg")
-    #print(top,bottom,right,left)
-    IMA.paste(final_pro,(left,top))
-    IMA.save("d.jpg")
-
     
     

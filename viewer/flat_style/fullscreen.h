@@ -6,7 +6,7 @@
 #include<QImage>
 #include<QPainter>
 #define POSTERNAME "D:/magicAlbum/sharePool/poster/poster.png"
-#define CURRENTNAME "D:/magicAlbum/sharePool/currnet.png"
+#define PERSONNAME "D:/magicAlbum/sharePool/person.png"
 
 namespace Ui {
 class FullScreen;

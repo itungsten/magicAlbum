@@ -1,4 +1,5 @@
 /classifier/checkpoints
+/classifier/imageMaker/build
 /doc/*.png
 /transformer/ganimation/ckpts/emotionNet
 /transformer/ganimation/datasets/celebA

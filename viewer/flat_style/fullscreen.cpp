@@ -75,15 +75,15 @@ void FullScreen::mouseReleaseEvent(QMouseEvent *ev)
         Widget* ptr=static_cast<Widget*>(this->parent());//父对象指针
         QString extName(ptr->editor->target.split('.')[1]);
         if(extName=="png"){
-            if(QFile::exists(CURRENTNAME)){
-                QFile::remove(CURRENTNAME);
+            if(QFile::exists(PERSONNAME)){
+                QFile::remove(PERSONNAME);
             }
-            QFile::copy(ptr->editor->target,CURRENTNAME);
+            QFile::copy(ptr->editor->target,PERSONNAME);
             //直接复制过去
         }
         else if(extName=="jpg"||extName=="jpge"){
             QImage currentIMage(ptr->editor->target);
-            currentIMage.save(CURRENTNAME);
+            currentIMage.save(PERSONNAME);
             //转化为png格式
         }else{
             ptr->timer->start(ptr->interval); //开始计时
@@ -96,23 +96,30 @@ void FullScreen::mouseReleaseEvent(QMouseEvent *ev)
     return QWidget::mouseReleaseEvent(ev);
 }
 void FullScreen::classifier(){
-    //导入模块(resizer.py)
     PyObject* resizerModule = PyImport_ImportModule("resizer");
     PyObject* resizeFunction = PyObject_GetAttrString(resizerModule,"resize");
-    PyObject_CallObject(resizeFunction,nullptr);
+    PyObject* args=Py_BuildValue("(iss)",224,"D:/magicAlbum/sharePool/poster/poster.png","D:/magicAlbum/sharePool/poster/poster.png");
+    PyObject_CallObject(resizeFunction,args);
+    Py_DecRef(args);
     //resize
 
-    PyObject* classifierModule=PyImport_ImportModule("classifier2");
+    PyObject* classifierModule=PyImport_ImportModule("classifier");
     PyObject* classifyFunction=PyObject_GetAttrString(classifierModule,"eval");
-    PyObject* pTag=PyObject_CallObject(classifyFunction,nullptr);
+    args=Py_BuildValue("({s:i,s:s,s:s})","batch_size",1,"test_data_root","D:/magicAlbum/sharePool/poster","load_model_path","D:/magicAlbum/classifier/checkpoints/AlexNet_0213_12_09_21.ckpt");
+    PyObject* pTag=PyObject_CallObject(classifyFunction,args);
     long tag=PyLong_AsLong(pTag);
-//    if(tag){
-//        //circle
-//        qDebug()<<"circle";
-//    }
-//    else{
-//        qDebug()<<"arc";
-//        //arc
-//    }
+    Py_DecRef(pTag);
+    Py_DecRef(args);
+    //classify
+
+
+//    qDebug()<<tag;
+    if(tag){
+        //circle
+    }
+    else{
+
+        //arc
+    }
     return ;
 }

@@ -1,7 +1,7 @@
 import torch as t 
 import torch.nn as nn
 import torch.nn.functional as F
-from torchvision import transforms
+from torchvision import transforms as T
 from PIL import Image
 import os
 from option import opt
@@ -42,26 +42,34 @@ def train(**kwargs):
 				
 				print('\n')
 			if(totalCnt>4900):
-				model.save("D:\\pytorch-book\\chapter6\\dataset\\checkpoints")
+				model.save("D:/magicAlbum/classifier/checkpoints")
 				totalCnt=0	
 
 
-def eval():
-	opt._parse({})
-	opt.batch_size=1
-	#偷懒，减少命令行参数
+def eval(kwargs):
+	opt._parse(kwargs)
 	testLoader=getTestDataLoader(opt)
 	model=AlexNet(opt)
 	model.load(opt.load_model_path)
 	model.eval()
-	# print()
-	for data in testLoader:
-		target=model(data)
-		value,tag=target.max(dim=1)
-		tag=tag.item()
-		#batch_size==1
-		# print(tag)
-		return tag
+
+	filepath=os.path.join(opt.test_data_root,"poster.png")
+	data=Image.open(filepath)
+	
+	mytransform=[T.Resize(224),
+				T.CenterCrop(224),
+				T.ToTensor(),
+				T.Normalize(mean=[0.485],std=[0.229])]
+	mytransform=T.Compose(mytransform)
+
+
+	data=mytransform(data)
+	data=data.unsqueeze(0)
+
+	target=model(data)
+	value,tag=target.max(dim=1)
+	tag=tag.item()
+	return tag
 
 if __name__=='__main__':
 	import fire
