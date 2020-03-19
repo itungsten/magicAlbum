@@ -26,6 +26,7 @@
 #include<QListWidgetItem>
 #include<QFileInfo>
 #include<QDateTime>
+#include<QLabel>
 
 Widget::Widget(QWidget *parent)
     : QWidget(parent)

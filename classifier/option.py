@@ -4,14 +4,14 @@ import torch as t
 
 class DefaultConfig(object):
     no_shuffle=False  #加载数据集时是否shuffle
-    num_classes='2'
+    num_classes=2
     train_data_root = 'train/'  # 训练集存放路径
     test_data_root = 'test/'  # 测试集存放路径
-    load_model_path = 'D:/pytorch-book/chapter6/dataset/checkpoints/AlexNet_0213_12_09_21.ckpt'  # 加载预训练的模型的路径，为None代表不加载
+    load_model_path = 'checkpoints/AlexNet_0213_12_09_21.ckpt'  # 加载预训练的模型的路径，为None代表不加载
 
     batch_size = 12# batch size
     use_gpu = False  # user GPU or not
-    num_workers = 4  # how many workers for loading data
+    num_workers = 4  # how many workers for loading data (threads)
 
     epochs = 10
     weight_decay=0e-5

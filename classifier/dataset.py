@@ -26,7 +26,7 @@ class MultiDataset(Dataset):
 			self.transform=T.Compose(self.transform)
 
 		else:
-			self.imgs=[os.path.join(test_data_root,img) for img in os.listdir(test_data_root)]
+			self.imgs=[os.path.join(opt.test_data_root,img) for img in os.listdir(opt.test_data_root)]
 			self.transform=[T.Resize(224),
 							T.CenterCrop(224),
 							T.ToTensor(),
@@ -41,10 +41,12 @@ class MultiDataset(Dataset):
 		if(self.opt.isTrain):
 			filepath=filepath.split('\\')[-1]
 			label=1 if 'circle' in filepath.split('.')[0] else 0
+			#circle is 1 & arc is 0
+			return data,int(label)
 		else:
 			label=filepath.split('.')[0]
+			return data
 
-		return data,int(label)
 
 	def __len__(self):
 		return len(self.imgs)

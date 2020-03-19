@@ -18,12 +18,12 @@ def train(**kwargs):
 	if(opt.load_model_path!=None):
 		model.load(opt.load_model_path)
 	model.train()
-	totcnt=0
+	totalCnt=0
 
 	for epoch in range(opt.epochs):
 		for idx,(bdata,blable) in enumerate(trainLoader):
 			optimizer.zero_grad()
-			totcnt+=opt.batch_size
+			totalCnt+=opt.batch_size
 			target=model(bdata)
 			loss=criterion(target,blable)
 			loss.backward()
@@ -41,15 +41,26 @@ def train(**kwargs):
 				print(target)
 				
 				print('\n')
-			if(totcnt>4900):
+			if(totalCnt>4900):
 				model.save("D:\\pytorch-book\\chapter6\\dataset\\checkpoints")
-				totcnt=0
-			
+				totalCnt=0	
 
 
 def test(**kwargs):
 	opt._parse(kwargs)
+	opt.batch_size=1
+	#偷懒，减少命令行参数
 	testLoader=getTestDataLoader(opt)
+	model=AlexNet(opt)
+	model.load(opt.load_model_path)
+	model.eval()
+	print()
+	for data in testLoader:
+		target=model(data)
+		value,tag=target.max(dim=1)
+		tag=tag.item()
+		#batch_size==1
+		print(tag)
 
 if __name__=='__main__':
 	import fire

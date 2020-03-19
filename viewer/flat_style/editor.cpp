@@ -42,7 +42,6 @@ Editor::Editor(QWidget *parent) :
         connect(ui->list,&QListWidget::itemClicked,[=](QListWidgetItem* item){
             quickIndex=ui->list->row(item);
             QPixmap map(list[quickIndex]);
-            ui->label->setScaledContents(true);
             ui->label->setPixmap(map);
         });
         //设置点击更新quickShow
@@ -154,6 +153,7 @@ void Editor::readList()
 
 void Editor::quickShow()
 {
+    ui->label->setScaledContents(true);
     if(list.size()==0){
         this->ui->label->setText("NULL");
         //如果没有图片，editor的展示就显示NULL；
