@@ -5,7 +5,7 @@ import torch as t
 class DefaultConfig(object):
     no_shuffle=False  #加载数据集时是否shuffle
     num_classes=2
-    train_data_root = 'train/'  # 训练集存放路径
+    train_data_root = 'D:/magicAlbum/classifier/train'  # 训练集存放路径
     test_data_root = 'D:/magicAlbum/sharePool/poster'  # 测试集存放路径
     load_model_path = 'D:/magicAlbum/classifier/checkpoints/AlexNet_0213_12_09_21.ckpt'  # 加载预训练的模型的路径，为None代表不加载
 

@@ -104,15 +104,11 @@ void FullScreen::classifier(){
 
     PyObject* classifierModule=PyImport_ImportModule("classifier2");
     PyObject* classifyFunction=PyObject_GetAttrString(classifierModule,"eval");
-    if(PyCallable_Check(classifyFunction)){
-        qDebug()<<"Nice";
-    }
     PyObject* pTag=PyObject_CallObject(classifyFunction,nullptr);
     long tag=PyLong_AsLong(pTag);
-    qDebug()<<tag;
 //    if(tag){
 //        //circle
-//        qDebug()<<"circle"<<" "<<tag;
+//        qDebug()<<"circle";
 //    }
 //    else{
 //        qDebug()<<"arc";
