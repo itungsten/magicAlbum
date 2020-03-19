@@ -242,7 +242,7 @@ void Widget::setStatusBar()
 QSize Widget::getFullSize()
 {
     QPixmap first=editor->now->currentPixmap();//用以获取图片尺寸
-    qDebug()<<full->size();
+//    qDebug()<<full->size();
     int sx,sy; //size of x，size of y
     double rate;//伸缩比例
     sy=(full->size()).height();//高度为屏幕高度

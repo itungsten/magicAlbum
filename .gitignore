@@ -2,6 +2,7 @@
 /doc/*.png
 /transformer/ganimation/ckpts/emotionNet
 /transformer/ganimation/datasets/celebA
+/viewer/flat_style/build
 
 
 ########

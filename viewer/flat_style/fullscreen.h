@@ -5,6 +5,7 @@
 #include<QMovie>
 #include<QImage>
 #include<QPainter>
+#define POSTERNAME "poster.png"
 
 namespace Ui {
 class FullScreen;

@@ -39,8 +39,8 @@ void FullScreen::mousePressEvent(QMouseEvent *ev)
       if(ev->button()==Qt::LeftButton){
           img=QImage(this->height(),this->height(),QImage::Format_Grayscale8);
           //创建一个正方形的，大小是y轴宽度的8位灰度图
-          img.fill(QColor(243,243,243));
-          //涂成白色，默认是灰色,现在变成灰色，统一颜色
+          img.fill(QColor(255,255,255));
+          //涂成白色
           lastPoint=nowPoint=ev->pos();
           //初始化点位置
           painter.begin(&img);
@@ -68,7 +68,7 @@ void FullScreen::mouseReleaseEvent(QMouseEvent *ev)
     if(ev->button()==Qt::LeftButton){
         painter.end();
         //好习惯会帮助你减少bug
-        img.save("map.png");
+        img.save(POSTERNAME);
         //输出用户图片
     }
     return QWidget::mouseReleaseEvent(ev);
