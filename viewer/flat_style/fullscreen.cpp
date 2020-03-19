@@ -2,6 +2,7 @@
 #include "ui_fullscreen.h"
 #include "widget.h"
 #include "ui_widget.h"
+#include "Python.h"
 #include<QKeyEvent>
 #include<QImage>
 #include<QDebug>
@@ -67,29 +68,55 @@ void FullScreen::mouseMoveEvent(QMouseEvent *ev){
 
 void FullScreen::mouseReleaseEvent(QMouseEvent *ev)
 {
-    Widget* ptr=static_cast<Widget*>(this->parent());//父对象指针
     if(ev->button()==Qt::LeftButton){
         painter.end();
         //好习惯会帮助你减少bug
-        img.save(POSTERNAME);
-        //输出用户图片
-    }
-    QString extName(ptr->editor->target.split('.')[1]);
-    if(extName=="png"){
-        if(QFile::exists(CURRENTNAME)){
-            QFile::remove(CURRENTNAME);
+
+        Widget* ptr=static_cast<Widget*>(this->parent());//父对象指针
+        QString extName(ptr->editor->target.split('.')[1]);
+        if(extName=="png"){
+            if(QFile::exists(CURRENTNAME)){
+                QFile::remove(CURRENTNAME);
+            }
+            QFile::copy(ptr->editor->target,CURRENTNAME);
+            //直接复制过去
         }
-        QFile::copy(ptr->editor->target,CURRENTNAME);
-        //直接复制过去
-    }
-    else if(extName=="jpg"||extName=="jpge"){
-        QImage currentIMage(ptr->editor->target);
-        currentIMage.save(CURRENTNAME);
-        //转化为png格式
-    }else{
+        else if(extName=="jpg"||extName=="jpge"){
+            QImage currentIMage(ptr->editor->target);
+            currentIMage.save(CURRENTNAME);
+            //转化为png格式
+        }else{
+            ptr->timer->start(ptr->interval); //开始计时
+            return QWidget::mouseReleaseEvent(ev);
+        }
+        img.save(POSTERNAME);
+        classifier();
         ptr->timer->start(ptr->interval); //开始计时
-        return;
     }
-    ptr->timer->start(ptr->interval); //开始计时
     return QWidget::mouseReleaseEvent(ev);
+}
+void FullScreen::classifier(){
+    //导入模块(resizer.py)
+    PyObject* resizerModule = PyImport_ImportModule("resizer");
+    PyObject* resizeFunction = PyObject_GetAttrString(resizerModule,"resize");
+    PyObject_CallObject(resizeFunction,nullptr);
+    //resize
+
+    PyObject* classifierModule=PyImport_ImportModule("main");
+    PyObject* classifyFunction=PyObject_GetAttrString(classifierModule,"test");
+    if(PyCallable_Check(classifyFunction)){
+
+        qDebug()<<"Nice";
+    }
+//    PyObject* pTag=PyObject_CallObject(classifyFunction,args);
+//    long tag=PyLong_AsLong(pTag);
+//    if(tag){
+//        //circle
+//        qDebug()<<"circle"<<" "<<tag;
+//    }
+//    else{
+//        qDebug()<<"arc";
+//        //arc
+//    }
+    return ;
 }

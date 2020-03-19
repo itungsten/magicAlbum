@@ -46,21 +46,22 @@ def train(**kwargs):
 				totalCnt=0	
 
 
-def test(**kwargs):
-	opt._parse(kwargs)
+def test():
+	opt._parse({})
 	opt.batch_size=1
 	#偷懒，减少命令行参数
 	testLoader=getTestDataLoader(opt)
 	model=AlexNet(opt)
 	model.load(opt.load_model_path)
 	model.eval()
-	print()
+	# print()
 	for data in testLoader:
 		target=model(data)
 		value,tag=target.max(dim=1)
 		tag=tag.item()
 		#batch_size==1
-		print(tag)
+		# print(tag)
+		return tag
 
 if __name__=='__main__':
 	import fire

@@ -5,8 +5,8 @@
 #include<QMovie>
 #include<QImage>
 #include<QPainter>
-#define POSTERNAME "poster.png"
-#define CURRENTNAME "currnet.png"
+#define POSTERNAME "D:/magicAlbum/sharePool/poster/poster.png"
+#define CURRENTNAME "D:/magicAlbum/sharePool/currnet.png"
 
 namespace Ui {
 class FullScreen;
@@ -26,6 +26,7 @@ public:
     void mousePressEvent(QMouseEvent* ev);
     void mouseMoveEvent(QMouseEvent* ev);
     void mouseReleaseEvent(QMouseEvent* ev);
+    void classifier();
     QImage img;
     QPoint lastPoint,nowPoint,disPoint;
     QPainter painter;
