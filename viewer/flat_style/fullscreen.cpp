@@ -102,12 +102,12 @@ void FullScreen::classifier(){
     PyObject_CallObject(resizeFunction,nullptr);
     //resize
 
-    PyObject* classifierModule=PyImport_ImportModule("main");
-    PyObject* classifyFunction=PyObject_GetAttrString(classifierModule,"test");
-    if(PyCallable_Check(classifyFunction)){
+//    PyObject* classifierModule=PyImport_ImportModule("main");
+//    PyObject* classifyFunction=PyObject_GetAttrString(classifierModule,"test");
+//    if(PyCallable_Check(classifyFunction)){
 
-        qDebug()<<"Nice";
-    }
+//        qDebug()<<"Nice";
+//    }
 //    PyObject* pTag=PyObject_CallObject(classifyFunction,args);
 //    long tag=PyLong_AsLong(pTag);
 //    if(tag){
