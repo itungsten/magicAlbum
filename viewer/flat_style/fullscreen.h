@@ -6,6 +6,7 @@
 #include<QImage>
 #include<QPainter>
 #define POSTERNAME "poster.png"
+#define CURRENTNAME "currnet.png"
 
 namespace Ui {
 class FullScreen;

@@ -36,6 +36,8 @@ void FullScreen::keyReleaseEvent(QKeyEvent *event)
 
 void FullScreen::mousePressEvent(QMouseEvent *ev)
 {
+      Widget* ptr=static_cast<Widget*>(this->parent());//父对象指针
+      ptr->timer->stop(); //停止计时
       if(ev->button()==Qt::LeftButton){
           img=QImage(this->height(),this->height(),QImage::Format_Grayscale8);
           //创建一个正方形的，大小是y轴宽度的8位灰度图
@@ -65,11 +67,29 @@ void FullScreen::mouseMoveEvent(QMouseEvent *ev){
 
 void FullScreen::mouseReleaseEvent(QMouseEvent *ev)
 {
+    Widget* ptr=static_cast<Widget*>(this->parent());//父对象指针
     if(ev->button()==Qt::LeftButton){
         painter.end();
         //好习惯会帮助你减少bug
         img.save(POSTERNAME);
         //输出用户图片
     }
+    QString extName(ptr->editor->target.split('.')[1]);
+    if(extName=="png"){
+        if(QFile::exists(CURRENTNAME)){
+            QFile::remove(CURRENTNAME);
+        }
+        QFile::copy(ptr->editor->target,CURRENTNAME);
+        //直接复制过去
+    }
+    else if(extName=="jpg"||extName=="jpge"){
+        QImage currentIMage(ptr->editor->target);
+        currentIMage.save(CURRENTNAME);
+        //转化为png格式
+    }else{
+        ptr->timer->start(ptr->interval); //开始计时
+        return;
+    }
+    ptr->timer->start(ptr->interval); //开始计时
     return QWidget::mouseReleaseEvent(ev);
 }
