@@ -16,8 +16,14 @@ class Options(object):
 
         parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
         
+        parser.add_argument('--results', type=str, default="D:/magicAlbum/sharePool/src", help='save test results to this path.')
+        #保存测试结果文件地址
+        parser.add_argument('--data_root',default='D:/magicAlbum/sharePool/head.jpg', help='paths to data set.')
+        # parser.add_argument('--data_root',default='D:/magicAlbum/transformer/ganimation/datasets/celebA', help='paths to data set.')
+        # parser.add_argument('--data_root',default='D:/magicAlbum/transformer/ganimation/datasets/dup', help='paths to data set.')
+        #数据集路径
 
-        parser.add_argument('--mode', type=str, default='train', help='Mode of code. [train|test]')
+        parser.add_argument('--mode', type=str, default='test', help='Mode of code. [train|test]')
         #训练或者测试
         parser.add_argument('--model', type=str, default='ganimation', help='[ganimation|stargan], see model.__init__ from more details.')
         #选择使用的模型
@@ -29,15 +35,11 @@ class Options(object):
         #visdom服务端口
         parser.add_argument('--visdom_display_id', type=int, default=1, help='set value larger than 0 to display with visdom.')
         #？？？
-        parser.add_argument('--results', type=str, default="results", help='save test results to this path.')
-        #保存测试结果文件地址
         parser.add_argument('--interpolate_len', type=int, default=5, help='interpolate length for test.')
         parser.add_argument('--no_test_eval', action='store_true', help='do not use eval mode during test time.')
         #设置测试时不评估
         parser.add_argument('--save_test_gif', action='store_true', help='save gif images instead of the concatenation of static images.')
         #将默认设置的静态拼接图片变成动态图
-        parser.add_argument('--data_root', required=True, help='paths to data set.')
-        #数据集路径
         parser.add_argument('--imgs_dir', type=str, default="imgs", help='path to image')
         #数据集下纯图片文件夹的路径
         parser.add_argument('--aus_pkl', type=str, default="aus_openface.pkl", help='AUs pickle dictionary.')
@@ -46,7 +48,7 @@ class Options(object):
         #内含数据集中用于训练的图片的id们
         parser.add_argument('--test_csv', type=str, default="test_ids.csv", help='test images paths')
         #内含数据集中用于测试的图片的id们
-        parser.add_argument('--batch_size', type=int, default=25, help='input batch size.')
+        parser.add_argument('--batch_size', type=int, default=2, help='input batch size.')
         #批大小，不可为1，会出现维度问题
         parser.add_argument('--serial_batches', action='store_true', help='if specified, input images in order.')
         #设置后，不进行shuffle
@@ -64,11 +66,11 @@ class Options(object):
         #设置预处理不进行图像翻转
         parser.add_argument('--aus_noise', action='store_true', help='if specified, add noise to target AUs.')
         #有关目标AU向量的噪声
-        parser.add_argument('--gpu_ids', type=str, default='0', help='gpu ids, eg. 0,1,2; -1 for cpu.')
+        parser.add_argument('--gpu_ids', type=str, default='-1', help='gpu ids, eg. 0,1,2; -1 for cpu.')
         #使用的gpu，默认使用gpu0，可以使用多个，设置-1使用cpu
-        parser.add_argument('--ckpt_dir', type=str, default='./ckpts', help='directory to save check points.')
+        parser.add_argument('--ckpt_dir', type=str, default='D:/magicAlbum/transformer/ganimation/ckpts/emotionNet/ganimation/190327_160828', help='directory to save check points.')
         #保存checkpoints的目录(记录了各个epoch内容)
-        parser.add_argument('--load_epoch', type=int, default=0, help='load epoch; 0: do not load')
+        parser.add_argument('--load_epoch', type=int, default=30, help='load epoch; 0: do not load')
         #？？？设置加载的epoch，0是不加载
         parser.add_argument('--log_file', type=str, default="logs.txt", help='log loss')
         #损失日志的路径
@@ -165,7 +167,7 @@ class Options(object):
         	#修正参数之间不和谐的地方，提高鲁棒性
 
             opt.visdom_display_id = 0
-            opt.results = os.path.join(opt.results, "%s_%s_%s" % (dataset_name, opt.model, opt.load_epoch))
+            # opt.results = os.path.join(opt.results, "%s_%s_%s" % (dataset_name, opt.model, opt.load_epoch))
             #e.g. results\celebA_ganimation_30
             if not os.path.exists(opt.results):
                 os.makedirs(opt.results)
@@ -203,6 +205,9 @@ class Options(object):
         # write command to file
         script_dir = opt.ckpt_dir 
         #和checkpoints一个目录下（有30_net_dis.pth 30_net_gen.pth opt.txt run_script.sh)
+
+
+        return opt
 
 
         with open(os.path.join(script_dir, "run_script.sh"), 'a+') as f:

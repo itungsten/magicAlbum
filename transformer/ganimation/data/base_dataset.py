@@ -52,7 +52,8 @@ class BaseDataset(torch.utils.data.Dataset):
         saved_dict = {}
         with open(pkl_path, 'rb') as f:
         	#b是打开pickle序列号文件必要的
-            saved_dict = pickle.load(f, encoding='latin1')
+            # saved_dict = pickle.load(f, encoding='latin1')
+            saved_dict = pickle.load(f)
             #encoding是latin1，我死了
         return saved_dict
 

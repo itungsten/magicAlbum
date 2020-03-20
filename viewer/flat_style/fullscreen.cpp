@@ -90,12 +90,21 @@ void FullScreen::mouseReleaseEvent(QMouseEvent *ev)
             return QWidget::mouseReleaseEvent(ev);
         }
         img.save(POSTERNAME);
-        classifier();
-        ptr->timer->start(ptr->interval); //开始计时
+        if(classifier()){
+            Widget* ptr=static_cast<Widget *>(this->parent());
+            this->ui->label->setMovie(ptr->editor->now);
+            delete anima;
+            ptr->timer->start(ptr->interval); //开始计时
+            //circle
+        }
+        else{
+            //arc
+            transformer();
+        }
     }
     return QWidget::mouseReleaseEvent(ev);
 }
-void FullScreen::classifier(){
+int FullScreen::classifier(){
     PyObject* resizerModule = PyImport_ImportModule("resizer");
     PyObject* resizeFunction = PyObject_GetAttrString(resizerModule,"resize");
     PyObject* args=Py_BuildValue("(iss)",224,"D:/magicAlbum/sharePool/poster/poster.png","D:/magicAlbum/sharePool/poster/poster.png");
@@ -112,14 +121,45 @@ void FullScreen::classifier(){
     Py_DecRef(args);
     //classify
 
+    return static_cast<int>(tag);
+}
+void FullScreen::transformer(){
+    int num=3;
+    PyObject* cutterModule=PyImport_ImportModule("cutter");
+    PyObject* cutFunction=PyObject_GetAttrString(cutterModule,"cut");
+    PyObject* args=Py_BuildValue("(ss)","D:/magicAlbum/sharePool/person.png","D:/magicAlbum/sharePool/head.png");
+    PyObject* pTuple=PyObject_CallObject(cutFunction,args);
+    int left,top;
+    PyArg_ParseTuple(pTuple,"ii",&left,&top);
+    Py_DecRef(args);
+    Py_DecRef(pTuple);
+    //cutter
 
-//    qDebug()<<tag;
-    if(tag){
-        //circle
-    }
-    else{
+    PyObject* rebuilderModule=PyImport_ImportModule("rebuilder");
+    PyObject* rebuildFunction=PyObject_GetAttrString(rebuilderModule,"rebuild");
+    args=Py_BuildValue("(iiisss)",num,left,top,"D:/magicAlbum/sharePool/person.png","D:/magicAlbum/sharePool/src","D:/magicAlbum/sharePool/target");
+    PyObject_CallObject(rebuildFunction,args);
+    Py_DecRef(args);
+    //rebuilder
 
-        //arc
-    }
-    return ;
+    PyObject* transformerModule=PyImport_ImportModule("transformer");
+    PyObject* transformeFunction=PyObject_GetAttrString(transformerModule,"transform");
+    args=Py_BuildValue("()");
+    PyObject_CallObject(transformeFunction,args);
+    Py_DecRef(args);
+
+
+    PyObject* combinerModule=PyImport_ImportModule("combiner");
+    PyObject* combineFunction=PyObject_GetAttrString(combinerModule,"combine");
+    args=Py_BuildValue("(iss)",num,"D:/magicAlbum/sharePool/target","D:/magicAlbum/sharePool/result.gif");
+    PyObject* pRet=PyObject_CallObject(combineFunction,args);
+    Py_DecRef(args);
+    int ret=PyLong_AsLong(pRet);
+    qDebug()<<ret;
+    Py_DecRef(pRet);
+    //combiner
+
+    anima=new QMovie("D:/magicAlbum/sharePool/result.gif");
+    this->ui->label->setMovie(anima);
+    anima->start();
 }

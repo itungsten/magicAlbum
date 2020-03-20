@@ -20,6 +20,9 @@ class CelebADataset(BaseDataset):
         img_id = str(os.path.splitext(os.path.basename(img_path))[0])
         #basename中包含扩展名，这里splitext取[0]是为了取基础名作为key
 
+ 		
+        # print(self.aus_dict[img_id])
+        # return self.aus_dict[img_id]   
         return self.aus_dict[img_id] / 5.0   
         # norm to [0, 1],本身是[0,5]
 
@@ -52,10 +55,11 @@ class CelebADataset(BaseDataset):
         tar_img_path = random.choice(self.imgs_path)
         #choice是从可迭代序列中随机选择一个作为target
 
-        laugh_img='000050.jpg'
+        # laugh_img='000050.jpg'
+        laugh_img='target.jpg'
         laugh_img=os.path.join(self.imgs_dir,laugh_img)
         tar_img_path=laugh_img
-        #用户手动指定目标图片
+        #用户手动指定target图片
 
 
         tar_img = self.get_img_by_path(tar_img_path)
@@ -66,6 +70,7 @@ class CelebADataset(BaseDataset):
             tar_aus = tar_aus + np.random.uniform(-0.1, 0.1, tar_aus.shape)
             #添加噪音，训练时
 
+        # print(tar_aus)
         # record paths for debug and test usage
         data_dict = {'src_img':src_img_tensor, 'src_aus':src_aus, 'src_path':img_path,'tar_img':tar_img_tensor, 'tar_aus':tar_aus, \
                          'tar_path':tar_img_path}

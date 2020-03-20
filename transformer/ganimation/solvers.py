@@ -1,12 +1,13 @@
-from data import create_dataloader
-from model import create_model
-from visualizer import Visualizer
+from .data import create_dataloader
+from .model import create_model
+from .visualizer import Visualizer
 import copy
 import time
 import os
 import torch
 import numpy as np
 from PIL import Image
+from torchvision import transforms
 
 
 def create_solver(opt):
@@ -139,6 +140,101 @@ class Solver(object):
                 # latest_aus = self.train_model.get_latest_aus()
                 # visual.log_aus(epoch, epoch_steps, latest_aus, opt.ckpt_dir)
 
+    def single_networks(self,opt):
+    	self.init_single_setting(opt)
+    	self.single_ops()
+
+    def init_single_setting(self,opt):
+    	self.single_data=opt.data_root
+    	self.single_model=create_model(opt)
+    def single_ops(self):
+        transform_list = []
+        if self.opt.resize_or_crop == 'resize_and_crop':
+            transform_list.append(transforms.Resize([self.opt.load_size, self.opt.load_size], Image.BICUBIC))
+            transform_list.append(transforms.RandomCrop(self.opt.final_size))
+        elif self.opt.resize_or_crop == 'crop':
+            transform_list.append(transforms.RandomCrop(self.opt.final_size))
+        elif self.opt.resize_or_crop == 'none':
+            pass
+            # transform_list.append(transforms.Lambda(lambda image: image))
+            #其实就是返回原图，可以用注释掉，用pass占位，windows下就不会出错了
+        else:
+            raise ValueError("--resize_or_crop %s is not a valid option." % self.opt.resize_or_crop)
+            #不是枚举值
+
+        if self.is_train and (not self.opt.no_flip):
+            transform_list.append(transforms.RandomHorizontalFlip())
+            #上下翻转
+
+        transform_list.append(transforms.ToTensor())
+        #转化为Tensor
+        transform_list.append(transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)))
+        #正则化
+
+        img2tensor = transforms.Compose(transform_list)
+        #打包哦
+        single_img=Image.open(self.opt.data_root).convert('RGB')
+       	single_img=img2tensor(single_img)
+       	single_img=single_img.unsqueeze(0)
+       	# print("hello peko")
+       	# print(single_img.shape)
+       	# return;
+        with torch.no_grad():
+
+            faces_list = list(single_img.float().numpy())
+            #转化为float是方便计算，转换numpy是因为本来是tensor，注意是list的list
+
+            #path源，目标成对出现，注意是list的list
+
+            # interpolate several times（插值 平滑）
+            tar_aus=[0.0,0.0,0.0, 0.4,1.31,0.0 ,0.08 ,0.7 ,2.18,0.75,0.0, 0.08 ,0.16 ,0.0,1.25 ,0.73 ,0.0]
+            tar_aus=[i/5 for i in tar_aus]
+            tar_aus=[tar_aus,]
+            # src_aus=[[0.00, 0.00, 0.04, 0.00, 0.32, 0.84, 0.00, 1.14, 1.12, 0.64, 0.00, 0.00, 0.13, 0.00, 1.25, 0.54, 0.0],]
+            src_aus=[0.,0.,0.56,0.99,0.,0.08,0.,0.,0.,0.42,0.,0.23,0.,0.05,0. ,0. ,  0.]
+            src_aus=[i/5 for i in src_aus]
+            src_aus=[src_aus,]
+            
+            tar_aus=torch.Tensor(tar_aus)
+            src_aus=torch.Tensor(src_aus)
+            # print(single_img.shape)
+            # print(tar_aus.shape)
+            # print(src_aus.shape)
+            # src_aus=[[0.55, 0.00, 0.00, 0.45, 0.46, 0.00, 0.26, 0.55, 1.31, 1.01, 0.00, 0.00, 1.18, 0.00, 0.0, 0.0, 0.0],]
+            for idx in range(self.opt.interpolate_len):
+                cur_alpha = (idx + 1.0) / float(self.opt.interpolate_len)
+            	#alpah是AU的激活度
+
+                cur_tar_aus = cur_alpha * tar_aus  + (1 - cur_alpha) * src_aus 
+                #AUs按激活度加权,注意有src，tar，gen。其中gen=src+tar
+
+                test_batch = {'src_img': single_img, 'tar_aus': cur_tar_aus, 'src_aus':src_aus, 'tar_img':torch.Tensor([])}
+                #基于alpha新构造的batch
+
+                self.single_model.feed_batch(test_batch)
+                self.single_model.forward()
+                #前向传播
+
+                cur_gen_faces = self.single_model.fake_img.squeeze(0).cpu().float().numpy()
+                #fake_img在gpu计算完成后，搬运到cpu上，再float，再numpy
+
+                faces_list.append(cur_gen_faces)
+                # print(len(faces_list))
+                #list of numpy
+                #cur_gen_faces是当前激活度下的fake_img
+
+
+
+            for (face_idx,face) in enumerate(faces_list):
+                img = np.array(self.visual.numpy2im(faces_list[face_idx]))
+                img = Image.fromarray(img)
+            # save image
+                saved_path = os.path.join(self.opt.results, "%d.png" % (face_idx+1))
+                img.save(saved_path)
+
+
+
+
     def test_networks(self, opt):
         self.init_test_setting(opt)
         self.test_ops()
@@ -154,6 +250,9 @@ class Solver(object):
 
             #避免重名用batch_idx
 
+            print(batch['src_img'].shape)
+            print(batch['tar_aus'])
+            print(batch['src_aus'])
             #测试时不计算梯度
             with torch.no_grad():
                 #batch层次
@@ -170,6 +269,7 @@ class Solver(object):
                     cur_alpha = (idx + 1.0) / float(self.opt.interpolate_len)
                 	#alpah是AU的激活度
 
+                    
                     cur_tar_aus = cur_alpha * batch['tar_aus'] + (1 - cur_alpha) * batch['src_aus']
                     #AUs按激活度加权,注意有src，tar，gen。其中gen=src+tar
 
@@ -224,7 +324,7 @@ class Solver(object):
 
                 imageio.mimsave(saved_path, imgs_numpy_list)
             else:
-            	#和应用无关，懒得写
+            	# #和应用无关，懒得写
 
 
                 # concate src, inters, tar faces
@@ -236,4 +336,18 @@ class Solver(object):
                 saved_path = os.path.join(self.opt.results, "%s_%s.jpg" % (src_name, tar_name))
                 concate_img.save(saved_path)
 
-            print("[Success] Saved images to %s" % saved_path)
+
+                         	#和应用无关，懒得写
+
+
+                # concate src, inters, tar faces
+                # for (face_idx,face) in enumerate(faces_list):
+                #     if((face_idx+1)==len(faces_list)):
+                #         break
+                #     img = np.array(self.visual.numpy2im(faces_list[face_idx][idx]))
+                #     img = Image.fromarray(img)
+                # # save image
+                #     saved_path = os.path.join(self.opt.results, "%d.png" % (face_idx+1))
+                #     img.save(saved_path)
+
+            # print("[Success] Saved images to %s" % saved_path)

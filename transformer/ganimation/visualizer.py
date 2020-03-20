@@ -150,7 +150,7 @@ class Visualizer(object):
         
         #image_numpy = np.transpose(image_numpy, (1, 2, 0)) * 255.0
         # input should be [0, 1]
-        
+        # print(image_numpy.shape)
         image_numpy = (np.transpose(image_numpy, (1, 2, 0)) / 2. + 0.5) * 255.0
         #把像素变为[0,255],图片的数组都要变成这样
         #input should be [-1,1]

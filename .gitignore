@@ -2,7 +2,7 @@
 /classifier/imageMaker/build
 /doc/*.png
 /transformer/ganimation/ckpts/emotionNet
-/transformer/ganimation/datasets/celebA
+/transformer/ganimation/datasets/
 /viewer/flat_style/build
 /sharePool/*
 

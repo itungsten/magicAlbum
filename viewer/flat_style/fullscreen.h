@@ -26,10 +26,12 @@ public:
     void mousePressEvent(QMouseEvent* ev);
     void mouseMoveEvent(QMouseEvent* ev);
     void mouseReleaseEvent(QMouseEvent* ev);
-    void classifier();
+    int classifier();
+    void transformer();
     QImage img;
     QPoint lastPoint,nowPoint,disPoint;
     QPainter painter;
+    QMovie* anima;
 
     Ui::FullScreen *ui;
 };
