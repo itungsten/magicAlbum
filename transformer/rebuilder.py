@@ -3,7 +3,7 @@ def rebuild(num,left,top,personPath,srcPath,targetPath):
     from PIL import Image
     for i in range (num):
         personIMA = Image.open(personPath)
-       	framePath= os.path.join(srcPath,str(i+1)+".jpg")
+       	framePath= os.path.join(srcPath,str(i+1)+".png")
         frmaeIMA = Image.open(framePath)
         personIMA.paste(frmaeIMA,(left,top))
         framePath= os.path.join(targetPath,str(i+1)+".png")

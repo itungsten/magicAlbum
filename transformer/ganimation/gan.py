@@ -3,6 +3,8 @@ from .solvers import create_solver
 
 def test(infile=None,outfile=None):
     opt = Options().parse()
+    # print(infile)
+    # print(outfile)
     #引入配置文件，并在这里读入参数
     solver = create_solver(opt)
     solver.is_train=0

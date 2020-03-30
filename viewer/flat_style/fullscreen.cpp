@@ -81,7 +81,7 @@ void FullScreen::mouseReleaseEvent(QMouseEvent *ev)
             QFile::copy(ptr->editor->target,PERSONNAME);
             //直接复制过去
         }
-        else if(extName=="jpg"||extName=="jpge"){
+        else if(extName=="jpg"||extName=="jpeg"){
             QImage currentIMage(ptr->editor->target);
             currentIMage.save(PERSONNAME);
             //转化为png格式
@@ -124,7 +124,6 @@ int FullScreen::classifier(){
     return static_cast<int>(tag);
 }
 void FullScreen::transformer(){
-    int num=3;
     PyObject* cutterModule=PyImport_ImportModule("cutter");
     PyObject* cutFunction=PyObject_GetAttrString(cutterModule,"cut");
     PyObject* args=Py_BuildValue("(ss)","D:/magicAlbum/sharePool/person.png","D:/magicAlbum/sharePool/head.png");
@@ -133,21 +132,23 @@ void FullScreen::transformer(){
     PyArg_ParseTuple(pTuple,"ii",&left,&top);
     Py_DecRef(args);
     Py_DecRef(pTuple);
+    qDebug()<<233;
     //cutter
 
+    PyObject* transformerModule=PyImport_ImportModule("transformer");
+    PyObject* transformeFunction=PyObject_GetAttrString(transformerModule,"transform");
+    args=Py_BuildValue("(ss)","D:/magicAlbum/sharePool/head.png","D:/magicAlbum/sharePool/src");
+    PyObject_CallObject(transformeFunction,args);
+    Py_DecRef(args);
+    //transformer
+
+    int num=6;
     PyObject* rebuilderModule=PyImport_ImportModule("rebuilder");
     PyObject* rebuildFunction=PyObject_GetAttrString(rebuilderModule,"rebuild");
     args=Py_BuildValue("(iiisss)",num,left,top,"D:/magicAlbum/sharePool/person.png","D:/magicAlbum/sharePool/src","D:/magicAlbum/sharePool/target");
     PyObject_CallObject(rebuildFunction,args);
     Py_DecRef(args);
     //rebuilder
-
-    PyObject* transformerModule=PyImport_ImportModule("transformer");
-    PyObject* transformeFunction=PyObject_GetAttrString(transformerModule,"transform");
-    args=Py_BuildValue("()");
-    PyObject_CallObject(transformeFunction,args);
-    Py_DecRef(args);
-
 
     PyObject* combinerModule=PyImport_ImportModule("combiner");
     PyObject* combineFunction=PyObject_GetAttrString(combinerModule,"combine");

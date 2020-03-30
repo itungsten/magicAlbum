@@ -13,12 +13,19 @@ class Options(object):
         super(Options, self).__init__()#传入自己的类名，和对象，调用父的构造函数
         
     def initialize(self):
-
-        parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-        
+        try:
+            parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+        except Exception as e:
+            print(repr(e))
+            import traceback
+            # print()
+            traceback.print_exc()
+        else:
+            pass
+        # print("AAA")
         parser.add_argument('--results', type=str, default="D:/magicAlbum/sharePool/src", help='save test results to this path.')
         #保存测试结果文件地址
-        parser.add_argument('--data_root',default='D:/magicAlbum/sharePool/head.jpg', help='paths to data set.')
+        parser.add_argument('--data_root',default='D:/magicAlbum/sharePool/head.png', help='paths to data set.')
         # parser.add_argument('--data_root',default='D:/magicAlbum/transformer/ganimation/datasets/celebA', help='paths to data set.')
         # parser.add_argument('--data_root',default='D:/magicAlbum/transformer/ganimation/datasets/dup', help='paths to data set.')
         #数据集路径
@@ -138,8 +145,9 @@ class Options(object):
 
     def parse(self):
         """解析参数"""
-        	
+        
         parser=self.initialize()#初始化默认值和参数项
+        # print("HHH")	
 
         parser.set_defaults(name=datetime.now().strftime("%y%m%d_%H%M%S"))
         #设置name参数默认为格式化后的当前时间
