@@ -5,6 +5,9 @@
 /transformer/ganimation/datasets/
 /viewer/flat_style/build
 /sharePool/*
+build
+__pycache__
+train
 
 
 ########

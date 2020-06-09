@@ -6,17 +6,17 @@ from PIL import Image
 import os
 from option import opt
 from dataloader import getTrainDataLoader,getTestDataLoader
-from models import AlexNet
+from models import AlexNet,SimpleNet
 
 def train(**kwargs):
 	opt._parse(kwargs)
 	trainLoader=getTrainDataLoader(opt)
-	model=AlexNet(opt)
+	model=SimpleNet(opt)
 	criterion=t.nn.CrossEntropyLoss()
 	optimizer=model.getOptimizer(opt.lr,opt.weight_decay)
 
-	if(opt.load_model_path!=None):
-		model.load(opt.load_model_path)
+	# if(opt.load_model_path!=None):
+		# model.load(opt.load_model_path)
 	model.train()
 	totalCnt=0
 
@@ -49,15 +49,15 @@ def train(**kwargs):
 def eval(kwargs):
 	opt._parse(kwargs)
 	testLoader=getTestDataLoader(opt)
-	model=AlexNet(opt)
+	model=SimpleNet(opt)
 	model.load(opt.load_model_path)
 	model.eval()
 
 	filepath=os.path.join(opt.test_data_root,"poster.png")
 	data=Image.open(filepath)
 	
-	mytransform=[T.Resize(224),
-				T.CenterCrop(224),
+	mytransform=[T.Resize(64),
+				T.CenterCrop(64),
 				T.ToTensor(),
 				T.Normalize(mean=[0.485],std=[0.229])]
 	mytransform=T.Compose(mytransform)

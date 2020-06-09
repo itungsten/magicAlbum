@@ -7,7 +7,7 @@ class DefaultConfig(object):
     num_classes=2
     train_data_root = 'D:/magicAlbum/classifier/train'  # 训练集存放路径
     test_data_root = 'D:/magicAlbum/sharePool/poster'  # 测试集存放路径
-    load_model_path = 'D:/magicAlbum/classifier/checkpoints/AlexNet_0213_12_09_21.ckpt'  # 加载预训练的模型的路径，为None代表不加载
+    load_model_path = 'D:/magicAlbum/classifier/checkpoints/SimpleNet_0609_22_24_32.ckpt'  # 加载预训练的模型的路径，为None代表不加载
 
     batch_size = 12# batch size
     use_gpu = False  # user GPU or not

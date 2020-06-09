@@ -46,6 +46,7 @@ MainWidget::MainWidget(QWidget *parent)
             painter.drawArc((this->w-tempx)/2,(this->h-tempy)/2,tempx,tempy,rand()*16,(rand()%90+270)*16);
             painter.end();
             QString filename="circle/circle."+QString::number(++(this->cntcirclc))+".png";
+            map=map.scaled(64,64);
             map.save(filename);
         }
     });
@@ -77,6 +78,7 @@ MainWidget::MainWidget(QWidget *parent)
             painter.drawArc((this->w-tempx)/2,(this->h-tempy)/2,tempx,tempy,rand()*16,(rand()%60+150)*16);
             painter.end();
             QString filename="arc/arc."+QString::number(++(this->cntarc))+".png";
+            map=map.scaled(64,64);
             map.save(filename);
         }
     });

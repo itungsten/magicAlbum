@@ -18,8 +18,8 @@ class MultiDataset(Dataset):
 		normalize = T.Normalize(mean=[0.485],std=[0.229])
 		if(isTrain):
 			self.imgs=[os.path.join(opt.train_data_root,img) for img in os.listdir(opt.train_data_root)]
-			self.transform=[T.Resize(256),
-							T.RandomCrop(224),
+			self.transform=[T.Resize(64),
+							T.RandomCrop(64),
 							T.RandomHorizontalFlip(),
 							T.ToTensor(),
 							normalize]
@@ -27,8 +27,8 @@ class MultiDataset(Dataset):
 
 		else:
 			self.imgs=[os.path.join(opt.test_data_root,img) for img in os.listdir(opt.test_data_root)]
-			self.transform=[T.Resize(224),
-							T.CenterCrop(224),
+			self.transform=[T.Resize(64),
+							T.CenterCrop(64),
 							T.ToTensor(),
 							normalize]
 			self.transform=T.Compose(self.transform)

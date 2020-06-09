@@ -71,7 +71,7 @@ void FullScreen::mouseReleaseEvent(QMouseEvent *ev)
     if(ev->button()==Qt::LeftButton){
         painter.end();
         //好习惯会帮助你减少bug
-
+        clock_t beg=clock();
         Widget* ptr=static_cast<Widget*>(this->parent());//父对象指针
         QString extName(ptr->editor->target.split('.')[1]);
         if(extName=="png"){
@@ -89,7 +89,12 @@ void FullScreen::mouseReleaseEvent(QMouseEvent *ev)
             ptr->timer->start(ptr->interval); //开始计时
             return QWidget::mouseReleaseEvent(ev);
         }
+        img=img.scaled(64,64);
         img.save(POSTERNAME);
+
+        qDebug()<<"save img"<<clock()-beg;
+        beg=clock();
+
         if(classifier()){
             Widget* ptr=static_cast<Widget *>(this->parent());
             this->ui->label->setMovie(ptr->editor->now);
@@ -105,25 +110,24 @@ void FullScreen::mouseReleaseEvent(QMouseEvent *ev)
     return QWidget::mouseReleaseEvent(ev);
 }
 int FullScreen::classifier(){
-    PyObject* resizerModule = PyImport_ImportModule("resizer");
-    PyObject* resizeFunction = PyObject_GetAttrString(resizerModule,"resize");
-    PyObject* args=Py_BuildValue("(iss)",224,"D:/magicAlbum/sharePool/poster/poster.png","D:/magicAlbum/sharePool/poster/poster.png");
-    PyObject_CallObject(resizeFunction,args);
-    Py_DecRef(args);
-    //resize
+    clock_t beg=clock();
 
     PyObject* classifierModule=PyImport_ImportModule("classifier");
     PyObject* classifyFunction=PyObject_GetAttrString(classifierModule,"eval");
-    args=Py_BuildValue("({s:i,s:s,s:s})","batch_size",1,"test_data_root","D:/magicAlbum/sharePool/poster","load_model_path","D:/magicAlbum/classifier/checkpoints/AlexNet_0213_12_09_21.ckpt");
+    PyObject* args=Py_BuildValue("({s:i,s:s,s:s})","batch_size",1,"test_data_root","D:/magicAlbum/sharePool/poster","load_model_path","D:/magicAlbum/classifier/checkpoints/SimpleNet_0609_23_48_04.ckpt");
     PyObject* pTag=PyObject_CallObject(classifyFunction,args);
     long tag=PyLong_AsLong(pTag);
     Py_DecRef(pTag);
     Py_DecRef(args);
     //classify
 
+    qDebug()<<tag<<"classify img"<<clock()-beg;
+    beg=clock();
+
     return static_cast<int>(tag);
 }
 void FullScreen::transformer(){
+    clock_t beg=clock();
     PyObject* cutterModule=PyImport_ImportModule("cutter");
     PyObject* cutFunction=PyObject_GetAttrString(cutterModule,"cut");
     PyObject* args=Py_BuildValue("(ss)","D:/magicAlbum/sharePool/person.png","D:/magicAlbum/sharePool/head.png");
@@ -132,8 +136,10 @@ void FullScreen::transformer(){
     PyArg_ParseTuple(pTuple,"ii",&left,&top);
     Py_DecRef(args);
     Py_DecRef(pTuple);
-    qDebug()<<233;
     //cutter
+
+    qDebug()<<"cut img"<<clock()-beg;
+    beg=clock();
 
     PyObject* transformerModule=PyImport_ImportModule("transformer");
     PyObject* transformeFunction=PyObject_GetAttrString(transformerModule,"transform");
@@ -142,6 +148,9 @@ void FullScreen::transformer(){
     Py_DecRef(args);
     //transformer
 
+    qDebug()<<"transform img"<<clock()-beg;
+    beg=clock();
+
     int num=6;
     PyObject* rebuilderModule=PyImport_ImportModule("rebuilder");
     PyObject* rebuildFunction=PyObject_GetAttrString(rebuilderModule,"rebuild");
@@ -149,6 +158,9 @@ void FullScreen::transformer(){
     PyObject_CallObject(rebuildFunction,args);
     Py_DecRef(args);
     //rebuilder
+
+    qDebug()<<"rebuild img"<<clock()-beg;
+    beg=clock();
 
     PyObject* combinerModule=PyImport_ImportModule("combiner");
     PyObject* combineFunction=PyObject_GetAttrString(combinerModule,"combine");
@@ -159,6 +171,9 @@ void FullScreen::transformer(){
     qDebug()<<ret;
     Py_DecRef(pRet);
     //combiner
+    qDebug()<<"combine img"<<clock()-beg;
+    beg=clock();
+
 
     anima=new QMovie("D:/magicAlbum/sharePool/result.gif");
     this->ui->label->setMovie(anima);
