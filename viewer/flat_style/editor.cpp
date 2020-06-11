@@ -9,6 +9,7 @@
 #include<QSpinBox>
 #include<QFileDialog>
 #include<QListWidget>
+#include"transformer.h"
 
 #include<QDebug>
 
@@ -80,8 +81,15 @@ void Editor::addItems()
         QFileInfo info(names[i]);
         if((info.suffix()=="gif")||(info.suffix()=="png")||(info.suffix()=="jpg")||(info.suffix()=="jpge")){
             //利用suffix筛选图片文件
-            list.append(names[i]);//向list数组里面添加
-            ui->list->addItem(info.baseName());//向list控件里面添加基本名
+            QString baseName=info.baseName();
+            QDir dir;
+            QString dirName=QString("D:/magicAlbum/warehouse/")+baseName;
+            dir.mkdir(dirName);
+            QString pathName=dirName+"/"+baseName+"."+info.suffix();
+            QFile::copy(names[i],pathName);
+            transformer.transform(pathName);
+            list.append(pathName);//向list数组里面添加
+            ui->list->addItem(baseName);//向list控件里面添加基本名
         }
     }
 }
@@ -103,7 +111,11 @@ void Editor::deleteItems()
 
     for(int j=removelist.size()-1;j>=0;j--){
         //我始终觉着QStringList还是封装STL的结果
-        list.erase(list.begin()+ui->list->row(removelist[j]));
+        int id=ui->list->row(removelist[j]);
+        QString name=list[id];
+        QFileInfo info(name);
+        QDir dir; dir.setPath(QString("D:/magicAlbum/warehouse/")+info.baseName()); dir.removeRecursively();
+        list.erase(list.begin()+id);
         //在list数组中删除，倒序（避免segment error）
     }
     for(int j=0;j<removelist.size();++j){

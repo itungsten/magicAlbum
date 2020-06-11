@@ -232,7 +232,6 @@ class Solver(object):
                 #cur_gen_faces是当前激活度下的fake_img
 
 
-
             for (face_idx,face) in enumerate(faces_list):
                 img = np.array(self.visual.numpy2im(faces_list[face_idx]))
                 img = Image.fromarray(img)

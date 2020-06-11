@@ -26,8 +26,6 @@ public:
     void mousePressEvent(QMouseEvent* ev);
     void mouseMoveEvent(QMouseEvent* ev);
     void mouseReleaseEvent(QMouseEvent* ev);
-    int classifier();
-    void transformer();
     QImage img;
     QPoint lastPoint,nowPoint,disPoint;
     QPainter painter;

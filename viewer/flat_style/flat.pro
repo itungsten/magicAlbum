@@ -22,6 +22,7 @@ SOURCES += \
     editor.cpp \
     fullscreen.cpp \
     main.cpp \
+    transformer.cpp \
     widget.cpp
 
 HEADERS += \
@@ -29,6 +30,7 @@ HEADERS += \
     flatpushbutton.h \
     editor.h \
     fullscreen.h \
+    transformer.h \
     widget.h
 
 FORMS += \

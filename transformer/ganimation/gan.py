@@ -3,6 +3,8 @@ from .solvers import create_solver
 
 def test(infile=None,outfile=None):
     opt = Options().parse()
+    opt.results=outfile
+    opt.data_root=infile
     # print(infile)
     # print(outfile)
     #引入配置文件，并在这里读入参数

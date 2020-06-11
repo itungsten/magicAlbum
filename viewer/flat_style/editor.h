@@ -4,6 +4,7 @@
 #include <QWidget>
 #include<QFile>
 #include<QStringList>
+#include"transformer.h"
 
 namespace Ui {
 class Editor;
@@ -33,6 +34,8 @@ public:
     QFile* inifile;//文件句柄的指针
     QString inipath="imgs.ini";//配置文件地址，太懒了，不想写interval的配置
     int quickIndex=-1;//quickShow的索引
+
+    Transformer transformer;
 
 signals:
     void signalChangePic();//退出editor时，叫你换张图片

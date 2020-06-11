@@ -24,7 +24,7 @@ public:
 
 
 signals:
-    void signalClicked();//信号娘：哎呦，我被戳了一下（daze！！
+    void signalClicked();//信号娘：哎呦，我被戳了一下（daze
 };
 
 #endif // flatCTRLBUTTON_H

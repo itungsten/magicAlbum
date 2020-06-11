@@ -95,7 +95,7 @@ void FullScreen::mouseReleaseEvent(QMouseEvent *ev)
         qDebug()<<"save img"<<clock()-beg;
         beg=clock();
 
-        if(classifier()){
+        if(1){
             Widget* ptr=static_cast<Widget *>(this->parent());
             this->ui->label->setMovie(ptr->editor->now);
             delete anima;
@@ -104,78 +104,10 @@ void FullScreen::mouseReleaseEvent(QMouseEvent *ev)
         }
         else{
             //arc
-            transformer();
+            anima=new QMovie("D:/magicAlbum/sharePool/result.gif");
+            this->ui->label->setMovie(anima);
+            anima->start();
         }
     }
     return QWidget::mouseReleaseEvent(ev);
-}
-int FullScreen::classifier(){
-    clock_t beg=clock();
-
-    PyObject* classifierModule=PyImport_ImportModule("classifier");
-    PyObject* classifyFunction=PyObject_GetAttrString(classifierModule,"eval");
-    PyObject* args=Py_BuildValue("({s:i,s:s,s:s})","batch_size",1,"test_data_root","D:/magicAlbum/sharePool/poster","load_model_path","D:/magicAlbum/classifier/checkpoints/SimpleNet_0609_23_48_04.ckpt");
-    PyObject* pTag=PyObject_CallObject(classifyFunction,args);
-    long tag=PyLong_AsLong(pTag);
-    Py_DecRef(pTag);
-    Py_DecRef(args);
-    //classify
-
-    qDebug()<<tag<<"classify img"<<clock()-beg;
-    beg=clock();
-
-    return static_cast<int>(tag);
-}
-void FullScreen::transformer(){
-    clock_t beg=clock();
-    PyObject* cutterModule=PyImport_ImportModule("cutter");
-    PyObject* cutFunction=PyObject_GetAttrString(cutterModule,"cut");
-    PyObject* args=Py_BuildValue("(ss)","D:/magicAlbum/sharePool/person.png","D:/magicAlbum/sharePool/head.png");
-    PyObject* pTuple=PyObject_CallObject(cutFunction,args);
-    int left,top;
-    PyArg_ParseTuple(pTuple,"ii",&left,&top);
-    Py_DecRef(args);
-    Py_DecRef(pTuple);
-    //cutter
-
-    qDebug()<<"cut img"<<clock()-beg;
-    beg=clock();
-
-    PyObject* transformerModule=PyImport_ImportModule("transformer");
-    PyObject* transformeFunction=PyObject_GetAttrString(transformerModule,"transform");
-    args=Py_BuildValue("(ss)","D:/magicAlbum/sharePool/head.png","D:/magicAlbum/sharePool/src");
-    PyObject_CallObject(transformeFunction,args);
-    Py_DecRef(args);
-    //transformer
-
-    qDebug()<<"transform img"<<clock()-beg;
-    beg=clock();
-
-    int num=6;
-    PyObject* rebuilderModule=PyImport_ImportModule("rebuilder");
-    PyObject* rebuildFunction=PyObject_GetAttrString(rebuilderModule,"rebuild");
-    args=Py_BuildValue("(iiisss)",num,left,top,"D:/magicAlbum/sharePool/person.png","D:/magicAlbum/sharePool/src","D:/magicAlbum/sharePool/target");
-    PyObject_CallObject(rebuildFunction,args);
-    Py_DecRef(args);
-    //rebuilder
-
-    qDebug()<<"rebuild img"<<clock()-beg;
-    beg=clock();
-
-    PyObject* combinerModule=PyImport_ImportModule("combiner");
-    PyObject* combineFunction=PyObject_GetAttrString(combinerModule,"combine");
-    args=Py_BuildValue("(iss)",num,"D:/magicAlbum/sharePool/target","D:/magicAlbum/sharePool/result.gif");
-    PyObject* pRet=PyObject_CallObject(combineFunction,args);
-    Py_DecRef(args);
-    int ret=PyLong_AsLong(pRet);
-    qDebug()<<ret;
-    Py_DecRef(pRet);
-    //combiner
-    qDebug()<<"combine img"<<clock()-beg;
-    beg=clock();
-
-
-    anima=new QMovie("D:/magicAlbum/sharePool/result.gif");
-    this->ui->label->setMovie(anima);
-    anima->start();
 }
