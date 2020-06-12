@@ -5,6 +5,7 @@
 #include "Python.h"
 #include<QKeyEvent>
 #include<QImage>
+#include<Windows.h>
 #include<QDebug>
 
 FullScreen::FullScreen(QWidget *parent) :
@@ -110,4 +111,97 @@ void FullScreen::mouseReleaseEvent(QMouseEvent *ev)
         }
     }
     return QWidget::mouseReleaseEvent(ev);
+}
+
+bool FullScreen::openPipe()
+{
+    HANDLE hPipe = NULL;
+    hPipe = CreateNamedPipe(
+        EXAMP_PIPE,
+        PIPE_ACCESS_DUPLEX,
+        PIPE_TYPE_MESSAGE |
+        PIPE_READMODE_MESSAGE |
+        PIPE_WAIT,
+        PIPE_UNLIMITED_INSTANCES,
+        BUF_SIZE,
+        BUF_SIZE,
+        0,
+        NULL);
+
+    if (hPipe==INVALID_HANDLE_VALUE)
+    {
+        qDebug()<<"Create Read Pipe Error";
+        return FALSE;
+    }
+
+    if (!ConnectNamedPipe(hPipe, NULL))
+    {
+        qDebug()<<"Connect Failed";
+        return FALSE;
+    }
+
+    STARTUPINFO stStartUpInfo;
+    ::memset(&stStartUpInfo, 0 ,sizeof(stStartUpInfo));
+    stStartUpInfo.cb = sizeof(stStartUpInfo);
+
+    PROCESS_INFORMATION stProcessInfo;
+    ::memset(&stProcessInfo, 0 ,sizeof(stProcessInfo));
+
+    TCHAR szPath[]=L"D:/anaconda/envs/t031/pythonw.exe";
+    TCHAR* szCmd=L" D:/magicAlbum/classifier/client.py";   //lpCommandLine的内容中开头需要一个空格，不然就和lpApplicationName连在一起去了
+
+    bool bRet = ::CreateProcess(
+        szPath,
+        szCmd,
+        NULL,
+        NULL,
+        false,
+        CREATE_NEW_CONSOLE,
+        NULL,
+        NULL,
+        &stStartUpInfo,
+        &stProcessInfo);
+
+    if (bRet)
+    {
+        ::CloseHandle(stProcessInfo.hProcess);
+        ::CloseHandle(stProcessInfo.hThread);
+        stProcessInfo.hProcess = NULL;
+        stProcessInfo.hThread = NULL;
+        stProcessInfo.dwProcessId = 0;
+        stProcessInfo.dwThreadId = 0;
+    }
+    else
+    {
+        //如果创建进程失败，查看错误码
+        DWORD dwErrCode = GetLastError();
+        printf_s("ErrCode : %d\n",dwErrCode);
+
+    }
+
+
+    DWORD dwReturn = 0;
+    char szBuffer[BUF_SIZE] = {0};
+    for(int i=0;i<200;++i){
+        // printf("sended");
+        // 读取客户端数据
+        memset(szBuffer, 0, BUF_SIZE);
+        if (ReadFile(hPipe,szBuffer,BUF_SIZE,&dwReturn,NULL))
+        {
+            szBuffer[dwReturn] = '\0';
+            qDebug()<<"receive msg:"<<szBuffer<<endl;
+        }
+        else
+        {
+            qDebug()<<"Read Failed";
+        }
+
+    }
+    DisconnectNamedPipe(hPipe);
+    CloseHandle(hPipe);
+    return TRUE;
+}
+void FullScreen::closePipe()
+{
+
 }

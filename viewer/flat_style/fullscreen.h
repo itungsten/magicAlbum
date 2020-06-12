@@ -1,5 +1,8 @@
 #ifndef FULLSCREEN_H
 #define FULLSCREEN_H
+#define BUF_SIZE 65535
+#define EXAMP_PIPE   L"\\\\.\\pipe\\AlbumPipe"
+// 定义管道名 , 如果是跨网络通信 , 则在圆点处指定服务器端程序所在的主机名
 
 #include <QWidget>
 #include<QMovie>
@@ -26,6 +29,8 @@ public:
     void mousePressEvent(QMouseEvent* ev);
     void mouseMoveEvent(QMouseEvent* ev);
     void mouseReleaseEvent(QMouseEvent* ev);
+    bool openPipe();
+    void closePipe();
     QImage img;
     QPoint lastPoint,nowPoint,disPoint;
     QPainter painter;
