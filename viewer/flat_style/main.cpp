@@ -1,6 +1,7 @@
 #include <QApplication>
 #include "widget.h"
 #include <Python.h>
+#include<windows.h>
 #define PYTHONENV L"D:/anaconda/envs/t031"
 #define CLASSIFIERPATH "sys.path.append('D:/magicAlbum/classifier')"
 #define TRANSFORMERPATH "sys.path.append('D:/magicAlbum/transformer')"
@@ -18,7 +19,6 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
     Widget w;
     a.exec();
-
 
     Py_Finalize();
     return 0;

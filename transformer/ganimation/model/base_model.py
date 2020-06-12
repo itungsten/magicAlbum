@@ -23,7 +23,7 @@ class BaseModel:
         #子类中用于存放模型名
 
     def setup(self):
-        print("%s with Model [%s]" % (self.opt.mode.capitalize(), self.name))
+        # print("%s with Model [%s]" % (self.opt.mode.capitalize(), self.name))
         #命令行输出的开始提示信息
 
         if self.is_train:
@@ -53,7 +53,7 @@ class BaseModel:
             self.set_test()
 
     def set_test(self):
-        print("Set model to Test state.")
+        # print("Set model to Test state.")
         for name in self.models_name:
             if isinstance(name, str):
                 net = getattr(self, 'net_' + name)
@@ -61,20 +61,20 @@ class BaseModel:
                 if (not self.opt.no_test_eval):
                 	#就是测试的时候使用评估模型（评估模型最主要是BN使用全样本，Dropout失效）
                     net.eval()
-                    print("Set net_%s to EVAL." % name)
+                    # print("Set net_%s to EVAL." % name)
                 else:
                 	#否则使用训练模型
                     net.train()
         self.is_train = False
 
     def set_train(self):
-        print("Set model to Train state.")
+        # print("Set model to Train state.")
         for name in self.models_name:
             if isinstance(name, str):
                 net = getattr(self, 'net_' + name)
                 net.train()
                 #把每个网路层设置到训练状态
-                print("Set net_%s to TRAIN." % name)
+                # print("Set net_%s to TRAIN." % name)
         self.is_train = True
 
     def set_requires_grad(self, parameters, requires_grad=False):
@@ -170,7 +170,7 @@ class BaseModel:
                 pretrained_dict = {k: v for k, v in pretrained_state_dict.items() if k in net.state_dict()}
                 #for是生成器 if是过滤器 这里过滤无用键值对
                 net.load_state_dict(pretrained_dict)
-                print("[Info] Successfully load trained weights for %s_net_%s." % (epoch,name))
+                # print("[Info] Successfully load trained weights for %s_net_%s." % (epoch,name))
                 #prompt
 
     def clean_ckpt(self, epoch, models_name):

@@ -6,6 +6,7 @@
 #include<QImage>
 #include<QDebug>
 #include<iostream>
+#include<Windows.h>
 
 
 Transformer::Transformer()
@@ -29,64 +30,65 @@ int Transformer::classifier(){
 
     return static_cast<int>(tag);
 }
+TCHAR *CharToWchar(const QString &str)
+{
+QByteArray ba = str.toUtf8();
+char *data = ba.data(); //以上两步不能直接简化为“char *data = str.toUtf8().data();”
+int charLen = strlen(data);
+int len = MultiByteToWideChar(CP_ACP, 0, data, charLen, NULL, 0);
+TCHAR *buf = new TCHAR[len + 1];
+MultiByteToWideChar(CP_ACP, 0, data, charLen, buf, len);
+buf[len] = '\0';
+return buf;
+}
 void Transformer::transform(QString path){
     info.setFile(path);
-    QString dirName=info.dir().path();
     QString baseName=info.baseName();
     QString fileName=info.fileName();
-    QString srcName=dirName+"/src";
-    QString targetName=dirName+"/target";
-    QString resultName=dirName+"/result.gif";
-    dir.setPath(dirName);
-    QString headName=dir.absoluteFilePath("head.png");
+    QString dirName="D:/magicAlbum/warehouse";
 
-    clock_t beg=clock();
-    PyObject* cutterModule=PyImport_ImportModule("cutter");
-    PyObject* cutFunction=PyObject_GetAttrString(cutterModule,"cut");
-    PyObject* args=Py_BuildValue("(ss)",path.toStdString().c_str(),headName.toStdString().c_str());
-    PyObject* pTuple=PyObject_CallObject(cutFunction,args);
-    int left,top;
-    PyArg_ParseTuple(pTuple,"ii",&left,&top);
-    Py_DecRef(args);
-    Py_DecRef(pTuple);
-    //cutter
+    STARTUPINFO stStartUpInfo;
+    ::memset(&stStartUpInfo, 0 ,sizeof(stStartUpInfo));
+    stStartUpInfo.cb = sizeof(stStartUpInfo);
 
-    qDebug()<<"cut img"<<clock()-beg;
-    beg=clock();
+    PROCESS_INFORMATION stProcessInfo;
+    ::memset(&stProcessInfo, 0 ,sizeof(stProcessInfo));
 
-    PyObject* transformerModule=PyImport_ImportModule("transformer");
-    PyObject* transformeFunction=PyObject_GetAttrString(transformerModule,"transform");
-    dir.mkdir(srcName);
-    qDebug()<<srcName<<" "<<headName;
-    args=Py_BuildValue("(ss)",headName.toStdString().c_str(),srcName.toStdString().c_str());
-    PyObject_CallObject(transformeFunction,args);
-    Py_DecRef(args);
-    //transformer
+    TCHAR szPath[]=L"D:/anaconda/envs/t031/pythonw.exe";
+    QString cmd=" D:/magicAlbum/transformer/main.py ";
+    cmd = cmd + dirName +" ";
+    cmd = cmd + baseName + " ";
+    cmd = cmd + fileName + " ";
+    cmd = cmd + "6" + " ";
 
-    qDebug()<<"transform img"<<clock()-beg;
-    beg=clock();
+    TCHAR* szCmd=CharToWchar(cmd);   //lpCommandLine的内容中开头需要一个空格，不然就和lpApplicationName连在一起去了
 
-    int num=6;
-    dir.mkdir(targetName);
-    PyObject* rebuilderModule=PyImport_ImportModule("rebuilder");
-    PyObject* rebuildFunction=PyObject_GetAttrString(rebuilderModule,"rebuild");
-    args=Py_BuildValue("(iiisss)",num,left,top,path.toStdString().c_str(),srcName.toStdString().c_str(),targetName.toStdString().c_str());
-    PyObject_CallObject(rebuildFunction,args);
-    Py_DecRef(args);
-    //rebuilder
+    bool bRet = ::CreateProcess(
+        szPath,
+        szCmd,
+        NULL,
+        NULL,
+        false,
+        CREATE_NEW_CONSOLE,
+        NULL,
+        NULL,
+        &stStartUpInfo,
+        &stProcessInfo);
 
-    qDebug()<<"rebuild img"<<clock()-beg;
-    beg=clock();
+    if (bRet)
+    {
+        ::CloseHandle(stProcessInfo.hProcess);
+        ::CloseHandle(stProcessInfo.hThread);
+        stProcessInfo.hProcess = NULL;
+        stProcessInfo.hThread = NULL;
+        stProcessInfo.dwProcessId = 0;
+        stProcessInfo.dwThreadId = 0;
+    }
+    else
+    {
+        //如果创建进程失败，查看错误码
+        DWORD dwErrCode = GetLastError();
+        printf_s("ErrCode : %d\n",dwErrCode);
 
-    PyObject* combinerModule=PyImport_ImportModule("combiner");
-    PyObject* combineFunction=PyObject_GetAttrString(combinerModule,"combine");
-    args=Py_BuildValue("(iss)",num,targetName.toStdString().c_str(),resultName.toStdString().c_str());
-    PyObject* pRet=PyObject_CallObject(combineFunction,args);
-    Py_DecRef(args);
-    int ret=PyLong_AsLong(pRet);
-    qDebug()<<ret;
-    Py_DecRef(pRet);
-    //combiner
-    qDebug()<<"combine img"<<clock()-beg;
-    beg=clock();
+    }
 }

@@ -10,6 +10,10 @@
 #include<QFileDialog>
 #include<QListWidget>
 #include"transformer.h"
+#include<windows.h>
+#include<future>
+using std::async;
+#include<thread>
 
 #include<QDebug>
 
@@ -87,7 +91,15 @@ void Editor::addItems()
             dir.mkdir(dirName);
             QString pathName=dirName+"/"+baseName+"."+info.suffix();
             QFile::copy(names[i],pathName);
+
+//            auto a1=async(std::launch::async,&Transformer::transform,&transformer,pathName);
+//            a1.wait();
             transformer.transform(pathName);
+//            std::thread t(&Transformer::transform,&transformer,pathName);
+//            WinExec("cmd /c activate t031 & python D:/cvtesst/capture2.py",SW_HIDE);
+//            t.detach();
+//            system("activate t031 & python D:/cvtesst/capture.py & pause");
+
             list.append(pathName);//向list数组里面添加
             ui->list->addItem(baseName);//向list控件里面添加基本名
         }
