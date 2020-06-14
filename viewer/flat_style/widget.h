@@ -33,7 +33,7 @@ public:
     void mousePressEvent(QMouseEvent* ev);
 
     Ui::Widget *ui;
-    int interval=1*1000; //全屏时每张图片展示的间隔，单位是msec，故默认一秒
+    int interval=1*100; //全屏时每张图片展示的间隔，单位是msec，故默认一秒
     QTimer* timer;  //计时器，用于触发切换图片事件
     int previewIndex=-1; //预览界面（主界面）显示的图片的索引
     QString version="alpah2.0"; //版本号

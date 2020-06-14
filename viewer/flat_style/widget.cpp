@@ -93,32 +93,36 @@ Widget::Widget(QWidget *parent)
         editor->show();
     });
     connect(ui->fullBtn->ui->pushBtn,&QPushButton::clicked,[=](){
-      if(previewIndex==-1){
-          //如果没有图片
-          full->ui->label->setText("Hello        World");
-          full->showFullScreen();
-          full->disPoint.setY(0);
-          full->disPoint.setX((full->width()-full->height())/2);
-          //全屏后刷新size，设置disPoint，为了用户交互图的坐标变换
-          return;
-      }
-      editor->target=editor->list[previewIndex];
-      editor->now=new QMovie(editor->target);
-      editor->now->start();
-
       full->showFullScreen();
       full->disPoint.setY(0);
       full->disPoint.setX((full->width()-full->height())/2);
-      //全屏后刷新size，设置disPoint，为了用户交互图的坐标变换
+      if(previewIndex==-1){
+          //如果没有图片
+          full->ui->label->setText("Hello        World");
 
-      //设置movie并开始播放，以刷新第一张Pixmap
+          //全屏后刷新size，设置disPoint，为了用户交互图的坐标变换
+          return;
+      }
+
+
+      editor->target=editor->list[previewIndex];
       full->ui->label->setFixedSize(getFullSize());
       full->ui->label->setScaledContents(true);
-      full->ui->label->setMovie(editor->now);
+//      editor->now=new QMovie(editor->target);
+//      editor->now->start();
+//      full->ui->label->setMovie(editor->now);
+      //设置movie并开始播放，以刷新第一张Pixmap
 
-
-      timer->start(interval);
+      QFileInfo info(editor->target);
+      full->anima=new QMovie(QString("D:/magicAlbum/warehouse/")+info.baseName()+"/result.gif");
+      full->ui->label->setMovie(full->anima);
+      full->anima->start();
       //显示全屏窗口并且计时
+
+      full->hide();
+      full->showFullScreen();
+      timer->start(interval);
+      full->openPipe();
     });
     connect(editor,&Editor::signalChangePic,[=](){
         flushPic();
@@ -130,19 +134,39 @@ Widget::Widget(QWidget *parent)
         editor->close();//调用closeEvent
     });
     connect(timer,&QTimer::timeout,[=](){
-        delete editor->now;//delete删除的是指向的对象，而不是指针变量
-        previewIndex++;//下一张
-        previewIndex%=editor->list.size();//循环播放
-        editor->target=editor->list[previewIndex];
-        editor->now=new QMovie(editor->target);
-        editor->now->start();//刷新currentPixmap
+//        delete editor->now;//delete删除的是指向的对象，而不是指针变量
+//        previewIndex++;//下一张
+//        previewIndex%=editor->list.size();//循环播放
+//        editor->target=editor->list[previewIndex];
+//        editor->now=new QMovie(editor->target);
+//        editor->now->start();//刷新currentPixmap
 
 
-        full->ui->label->setFixedSize(getFullSize());//固定label的大小与图片原大小成比例放大,因为每张图片大小不一，所以每次都要修改
+//        full->ui->label->setFixedSize(getFullSize());//固定label的大小与图片原大小成比例放大,因为每张图片大小不一，所以每次都要修改
 //        qDebug()<<full->ui->label->size();//???
-        full->ui->label->setScaledContents(true);//设置label内容自动缩放到label大小
-        full->ui->label->setMovie(editor->now);//更新动画
-        full->ui->label->update();//强制重绘
+//        full->ui->label->setScaledContents(true);//设置label内容自动缩放到label大小
+//        full->ui->label->setMovie(editor->now);//更新动画
+//        full->ui->label->update();//强制重绘
+
+        DWORD dwReturn = 0;
+        char szBuffer[BUF_SIZE] = {0};
+        memset(szBuffer, 0, BUF_SIZE);
+        if (ReadFile(full->hPipe,szBuffer,BUF_SIZE,&dwReturn,NULL))
+        {
+            szBuffer[dwReturn] = '\0';
+            qDebug()<<"receive msg:"<<szBuffer<<endl;
+            if(szBuffer[0]>'3'){
+                if(full->anima->Paused)
+                    full->anima->setPaused(false);
+            }
+            else{
+                full->anima->setPaused(true);
+            }
+        }
+        else
+        {
+            qDebug()<<"Read Failed";
+        }
     });
 
     connect(ui->exitBtn->ui->pushBtn,&QPushButton::clicked,[=](){

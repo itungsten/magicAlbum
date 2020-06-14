@@ -126,3 +126,5 @@ sftp-config.json
 results/
 ckpts/
 datasets/
+warehouse
+.exe

@@ -7,6 +7,7 @@
 #include <QWidget>
 #include<QMovie>
 #include<QImage>
+#include<Windows.h>
 #include<QPainter>
 #define POSTERNAME "D:/magicAlbum/sharePool/poster/poster.png"
 #define PERSONNAME "D:/magicAlbum/sharePool/person.png"
@@ -35,6 +36,9 @@ public:
     QPoint lastPoint,nowPoint,disPoint;
     QPainter painter;
     QMovie* anima;
+
+    HANDLE hPipe;
+    PROCESS_INFORMATION stProcessInfo;
 
     Ui::FullScreen *ui;
 };

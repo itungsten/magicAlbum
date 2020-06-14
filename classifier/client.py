@@ -71,7 +71,7 @@ def grdetect(array, verbose = False):
   copy       = array.copy()
   array = _remove_background(array) # 移除背景, add by wnavy
   thresh = _bodyskin_detetc(array)
-  cv2.imshow('dfs',thresh)
+  # cv2.imshow('dfs',thresh)
   # thresh=array
   contours   = _get_contours(thresh) # 计算图像的轮廓
 
@@ -87,12 +87,20 @@ def grdetect(array, verbose = False):
 PIPE_BUFFER_SIZE=65532
 PIPE_NAME = r'\\.\pipe\AlbumPipe'
 
-
-
-file_handle = win32file.CreateFile(PIPE_NAME,
+time.sleep(1)
+try:
+  file_handle = win32file.CreateFile(PIPE_NAME,
                                    win32file.GENERIC_READ | win32file.GENERIC_WRITE,
                                    win32file.FILE_SHARE_WRITE, None,
                                    win32file.OPEN_EXISTING, 0, None)
+except Exception as e:
+  print(e)
+  os.system("pause")
+else:
+  pass
+finally:
+  pass
+
 cap=Capture(0)
 while 1:
   frame=cap.read()
@@ -101,8 +109,10 @@ while 1:
       res=0
   else :
     res=res+1
+
   print ('send msg:', res)
   win32file.WriteFile(file_handle, bytes(str(res),encoding='utf-8'))
-  cv2.waitKey(50)
-
+  cv2.waitKey(100)
+print(3)
+os.system("pause")
 win32file.CloseHandle(file_handle)
