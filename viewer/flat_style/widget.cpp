@@ -155,21 +155,34 @@ Widget::Widget(QWidget *parent)
         memset(szBuffer, 0, BUF_SIZE);
         if(ReadFile(full->hPipe,szBuffer,BUF_SIZE,&dwReturn,NULL))
         {
-            if(szBuffer[0]!=full->lastCode){
-                full->lastCode=szBuffer[0];
-                szBuffer[dwReturn] = '\0';
-                if(full->anima!=nullptr)delete full->anima;
-                QFileInfo info(editor->target);
-
-                if(szBuffer[0]>'3'){
-                    full->anima=new QMovie(QString("D:/magicAlbum/warehouse/")+info.baseName()+"/result.gif");
-                }
-                else{
-                    full->anima=new QMovie(editor->target);
-                }
-                full->ui->label->setMovie(full->anima);
-                full->anima->start();
+            QFileInfo info(editor->target);
+            if(full->lastCode=='3'&&szBuffer[0]<='3')goto cont;
+            if(full->lastCode=='5'&&szBuffer[0]>'3')goto cont;
+            szBuffer[dwReturn] = '\0';
+            if(full->anima!=nullptr)delete full->anima;
+            switch(szBuffer[0]){
+            case '0':
+            case '1':
+            case '2':
+            case '3':
+                full->lastCode='3';
+                full->anima=new QMovie(QString("D:/magicAlbum/warehouse/")+info.baseName()+"/unhappy.gif");
+                break;
+            case '4':
+            case '5':
+            case '6':
+                full->lastCode='5';
+                full->anima=new QMovie(QString("D:/magicAlbum/warehouse/")+info.baseName()+"/happy.gif");
+                break;
+            default:
+                full->lastCode='5';
+                full->anima=new QMovie(QString("D:/magicAlbum/warehouse/")+info.baseName()+"/happy.gif");
+                break;
             }
+            full->ui->label->setMovie(full->anima);
+            full->anima->start();
+//            full->lastCode=szBuffer[0];
+            cont:
             qDebug()<<"receive msg:"<<full->lastCode<<endl;
         }
         else
