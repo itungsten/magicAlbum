@@ -40,6 +40,8 @@ public:
     HANDLE hPipe;
     PROCESS_INFORMATION stProcessInfo;
 
+    char lastCode=0;
+
     Ui::FullScreen *ui;
 };
 

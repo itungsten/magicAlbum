@@ -108,15 +108,17 @@ Widget::Widget(QWidget *parent)
       editor->target=editor->list[previewIndex];
       full->ui->label->setFixedSize(getFullSize());
       full->ui->label->setScaledContents(true);
-//      editor->now=new QMovie(editor->target);
-//      editor->now->start();
-//      full->ui->label->setMovie(editor->now);
+
+      editor->now=new QMovie(editor->target);
+      editor->now->start();
+      full->ui->label->setMovie(editor->now);
+      full->anima=nullptr;
       //设置movie并开始播放，以刷新第一张Pixmap
 
-      QFileInfo info(editor->target);
-      full->anima=new QMovie(QString("D:/magicAlbum/warehouse/")+info.baseName()+"/result.gif");
-      full->ui->label->setMovie(full->anima);
-      full->anima->start();
+//      QFileInfo info(editor->target);
+//      full->anima=new QMovie(QString("D:/magicAlbum/warehouse/")+info.baseName()+"/result.gif");
+//      full->ui->label->setMovie(full->anima);
+//      full->anima->start();
       //显示全屏窗口并且计时
 
       full->hide();
@@ -151,17 +153,24 @@ Widget::Widget(QWidget *parent)
         DWORD dwReturn = 0;
         char szBuffer[BUF_SIZE] = {0};
         memset(szBuffer, 0, BUF_SIZE);
-        if (ReadFile(full->hPipe,szBuffer,BUF_SIZE,&dwReturn,NULL))
+        if(ReadFile(full->hPipe,szBuffer,BUF_SIZE,&dwReturn,NULL))
         {
-            szBuffer[dwReturn] = '\0';
-            qDebug()<<"receive msg:"<<szBuffer<<endl;
-            if(szBuffer[0]>'3'){
-                if(full->anima->Paused)
-                    full->anima->setPaused(false);
+            if(szBuffer[0]!=full->lastCode){
+                full->lastCode=szBuffer[0];
+                szBuffer[dwReturn] = '\0';
+                if(full->anima!=nullptr)delete full->anima;
+                QFileInfo info(editor->target);
+
+                if(szBuffer[0]>'3'){
+                    full->anima=new QMovie(QString("D:/magicAlbum/warehouse/")+info.baseName()+"/result.gif");
+                }
+                else{
+                    full->anima=new QMovie(editor->target);
+                }
+                full->ui->label->setMovie(full->anima);
+                full->anima->start();
             }
-            else{
-                full->anima->setPaused(true);
-            }
+            qDebug()<<"receive msg:"<<full->lastCode<<endl;
         }
         else
         {

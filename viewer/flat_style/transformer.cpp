@@ -60,7 +60,7 @@ void Transformer::transform(QString path){
     cmd = cmd + baseName + " ";
     cmd = cmd + fileName + " ";
     cmd = cmd + "10" + " ";
-
+//    qDebug()<<cmd;
     TCHAR* szCmd=CharToWchar(cmd);   //lpCommandLine的内容中开头需要一个空格，不然就和lpApplicationName连在一起去了
 
     bool bRet = ::CreateProcess(

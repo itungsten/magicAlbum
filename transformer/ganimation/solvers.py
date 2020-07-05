@@ -188,7 +188,7 @@ class Solver(object):
             #path源，目标成对出现，注意是list的list
 
             # interpolate several times（插值 平滑）
-            tar_aus=[0.0,0.0,0.0, 0.4,1.31,0.0 ,0.08 ,0.7 ,2.18,0.75,0.0, 0.08 ,0.16 ,0.0,1.25 ,0.73 ,0.0]
+            tar_aus=self.opt.tarAus
             tar_aus=[i/5 for i in tar_aus]
             tar_aus=[tar_aus,]
 
@@ -196,7 +196,7 @@ class Solver(object):
                 src_aus=pickle.load(f)
             # src_aus=[0.00, 0.00, 0.00, 0.32, 0.03, 1.49, 0.47, 0.00, 0.35, 0.18, 0.00, 0.00, 0.00, 0.00, 0.04, 0.20, 0.00]
             #58
-            print(src_aus)
+            # print(src_aus)
             src_aus=[i/5 for i in src_aus]
             src_aus=[src_aus,]
             
