@@ -7,6 +7,7 @@ import os
 import torch
 import numpy as np
 from PIL import Image
+import pickle
 from torchvision import transforms
 
 
@@ -122,7 +123,7 @@ class Solver(object):
             
             #visdom绘制loss map
             if self.train_total_steps % self.opt.plot_losses_freq == 0 and self.visual.display_id > 0:
-            	#按频率展示，id表示是否启用
+                #按频率展示，id表示是否启用
 
                 cur_losses = self.train_model.get_latest_losses()
                 self.visual.display_current_losses(epoch - 1, epoch_steps / len(self.train_dataset), cur_losses)
@@ -131,7 +132,7 @@ class Solver(object):
             
             #visdom展示图片
             if self.train_total_steps % self.opt.sample_img_freq == 0 and self.visual.display_id > 0:
-            	#按频率展示，id表示是否启用
+                #按频率展示，id表示是否启用
 
                 cur_vis = self.train_model.get_latest_visuals()
                 self.visual.display_online_results(cur_vis, epoch)
@@ -141,12 +142,12 @@ class Solver(object):
                 # visual.log_aus(epoch, epoch_steps, latest_aus, opt.ckpt_dir)
 
     def single_networks(self,opt):
-    	self.init_single_setting(opt)
-    	self.single_ops()
+        self.init_single_setting(opt)
+        self.single_ops()
 
     def init_single_setting(self,opt):
-    	self.single_data=opt.data_root
-    	self.single_model=create_model(opt)
+        self.single_data=opt.data_root
+        self.single_model=create_model(opt)
     def single_ops(self):
         transform_list = []
         if self.opt.resize_or_crop == 'resize_and_crop':
@@ -174,11 +175,11 @@ class Solver(object):
         img2tensor = transforms.Compose(transform_list)
         #打包哦
         single_img=Image.open(self.opt.data_root).convert('RGB')
-       	single_img=img2tensor(single_img)
-       	single_img=single_img.unsqueeze(0)
-       	# print("hello peko")
-       	# print(single_img.shape)
-       	# return;
+        single_img=img2tensor(single_img)
+        single_img=single_img.unsqueeze(0)
+        # print("hello peko")
+        # print(single_img.shape)
+        # return;
         with torch.no_grad():
 
             faces_list = list(single_img.float().numpy())
@@ -190,14 +191,9 @@ class Solver(object):
             tar_aus=[0.0,0.0,0.0, 0.4,1.31,0.0 ,0.08 ,0.7 ,2.18,0.75,0.0, 0.08 ,0.16 ,0.0,1.25 ,0.73 ,0.0]
             tar_aus=[i/5 for i in tar_aus]
             tar_aus=[tar_aus,]
-            # src_aus=[[0.00, 0.00, 0.04, 0.00, 0.32, 0.84, 0.00, 1.14, 1.12, 0.64, 0.00, 0.00, 0.13, 0.00, 1.25, 0.54, 0.0],]
-            # src_aus=[0.,0.,0.56,0.99,0.,0.08,0.,0.,0.,0.42,0.,0.23,0.,0.05,0. ,0. ,  0.]
-            # print(src_aus)
-            # src_aus=[0.22, 0.00, 0.00, 0.87, 0.54, 0.00, 0.20, 0.29, 1.40, 1.08, 0.00, 0.00, 1.40, 0.00, 0.00,0,0]
-            # man
-            src_aus=[0.45, 0.00, 0.00, 1.35, 0.00, 0.58, 0.00, 0.00, 0.27, 0.00, 0.00, 0.00, 1.53, 0.00, 0.79, 0.54, 0.00]
-            src_aus=[1.14, 0.90, 0.00, 0.07, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.70, 0.00, 0.28, 0.00, 0.00, 0.20, 0.11]
-            # woman
+
+            with open(self.opt.ausPath,'rb') as f:
+                src_aus=pickle.load(f)
             # src_aus=[0.00, 0.00, 0.00, 0.32, 0.03, 1.49, 0.47, 0.00, 0.35, 0.18, 0.00, 0.00, 0.00, 0.00, 0.04, 0.20, 0.00]
             #58
             print(src_aus)
@@ -212,7 +208,7 @@ class Solver(object):
             # src_aus=[[0.55, 0.00, 0.00, 0.45, 0.46, 0.00, 0.26, 0.55, 1.31, 1.01, 0.00, 0.00, 1.18, 0.00, 0.0, 0.0, 0.0],]
             for idx in range(self.opt.interpolate_len):
                 cur_alpha = (idx + 1.0) / float(self.opt.interpolate_len)
-            	#alpah是AU的激活度
+                #alpah是AU的激活度
 
                 cur_tar_aus = cur_alpha * tar_aus  + (1 - cur_alpha) * src_aus 
                 #AUs按激活度加权,注意有src，tar，gen。其中gen=src+tar
@@ -275,7 +271,7 @@ class Solver(object):
                 # interpolate several times（插值 平滑）
                 for idx in range(self.opt.interpolate_len):
                     cur_alpha = (idx + 1.0) / float(self.opt.interpolate_len)
-                	#alpah是AU的激活度
+                    #alpah是AU的激活度
 
                     
                     cur_tar_aus = cur_alpha * batch['tar_aus'] + (1 - cur_alpha) * batch['src_aus']
@@ -303,14 +299,14 @@ class Solver(object):
 
     def test_save_imgs(self, faces_list, paths_list):
         for idx in range(len(paths_list[0])):
-        	#batch_size
+            #batch_size
 
             src_name = os.path.splitext(os.path.basename(paths_list[0][idx]))[0]
             tar_name = os.path.splitext(os.path.basename(paths_list[1][idx]))[0]
             #这里basename包括扩展名，splitext按扩展名切分
 
             if self.opt.save_test_gif:
-            	#输出动图
+                #输出动图
                 import imageio
                 #动图的库。。。大多数都是numpy接口嘛
                 
@@ -318,7 +314,7 @@ class Solver(object):
 
                 for face_idx in range(len(faces_list) - 1):  
                     #-1 means to remove target image
-                	#list的len都是直接元素的数目
+                    #list的len都是直接元素的数目
 
                     cur_numpy = np.array(self.visual.numpy2im(faces_list[face_idx][idx]))
                     #转化为numpy
@@ -332,7 +328,7 @@ class Solver(object):
 
                 imageio.mimsave(saved_path, imgs_numpy_list)
             else:
-            	# #和应用无关，懒得写
+                # #和应用无关，懒得写
 
 
                 # concate src, inters, tar faces
@@ -345,7 +341,7 @@ class Solver(object):
                 concate_img.save(saved_path)
 
 
-                         	#和应用无关，懒得写
+                            #和应用无关，懒得写
 
 
                 # concate src, inters, tar faces

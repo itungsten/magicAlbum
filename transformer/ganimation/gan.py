@@ -1,10 +1,11 @@
 from .options import Options
 from .solvers import create_solver
 
-def test(num=6,infile=None,outfile=None):
+def test(num=6,infile=None,outfile=None,ausPath=None):
     opt = Options().parse()
     opt.results=outfile
     opt.data_root=infile
+    opt.ausPath=ausPath
     opt.interpolate_len=num-1
     # print(infile)
     # print(outfile)

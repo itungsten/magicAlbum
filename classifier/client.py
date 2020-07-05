@@ -71,7 +71,7 @@ def grdetect(array, verbose = False):
   copy       = array.copy()
   array = _remove_background(array) # 移除背景, add by wnavy
   thresh = _bodyskin_detetc(array)
-  # cv2.imshow('dfs',thresh)
+  cv2.imshow('Just for demonstration',thresh)
   # thresh=array
   contours   = _get_contours(thresh) # 计算图像的轮廓
 
