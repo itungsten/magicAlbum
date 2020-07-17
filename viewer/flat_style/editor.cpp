@@ -1,21 +1,17 @@
 #include "editor.h"
 #include "ui_editor.h"
-
 #include "widget.h"
 #include "ui_widget.h"
-
 #include<QFile>
 #include<QFileInfo>
 #include<QSpinBox>
 #include<QFileDialog>
 #include<QListWidget>
 #include"transformer.h"
-#include<windows.h>
-#include<future>
-using std::async;
-#include<thread>
-
+#include<Windows.h>
 #include<QDebug>
+
+#include"conf.h"
 
 Editor::Editor(QWidget *parent) :
     QWidget(parent),
@@ -87,7 +83,7 @@ void Editor::addItems()
             //利用suffix筛选图片文件
             QString baseName=info.baseName();
             QDir dir;
-            QString dirName=QString("D:/magicAlbum/warehouse/")+baseName;
+            QString dirName=QString(WAREHOUSEPATH)+baseName;
             dir.mkdir(dirName);
             QString pathName=dirName+"/"+baseName+"."+info.suffix();
             QFile::copy(names[i],pathName);
@@ -126,7 +122,7 @@ void Editor::deleteItems()
         int id=ui->list->row(removelist[j]);
         QString name=list[id];
         QFileInfo info(name);
-        QDir dir; dir.setPath(QString("D:/magicAlbum/warehouse/")+info.baseName()); dir.removeRecursively();
+        QDir dir; dir.setPath(QString(WAREHOUSEPATH)+info.baseName()); dir.removeRecursively();
         list.erase(list.begin()+id);
         //在list数组中删除，倒序（避免segment error）
     }

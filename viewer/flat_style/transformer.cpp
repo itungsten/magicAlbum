@@ -1,12 +1,12 @@
 #include "transformer.h"
 #include "widget.h"
 #include "ui_widget.h"
-#include "Python.h"
 #include<QKeyEvent>
 #include<QImage>
 #include<QDebug>
 #include<iostream>
 #include<Windows.h>
+#include"conf.h"
 
 
 Transformer::Transformer()
@@ -14,28 +14,29 @@ Transformer::Transformer()
 
 }
 int Transformer::classifier(){
-    clock_t beg=clock();
+//    clock_t beg=clock();
 
-    PyObject* classifierModule=PyImport_ImportModule("classifier");
-    PyObject* classifyFunction=PyObject_GetAttrString(classifierModule,"eval");
-    PyObject* args=Py_BuildValue("({s:i,s:s,s:s})","batch_size",1,"test_data_root","D:/magicAlbum/sharePool/poster","load_model_path","D:/magicAlbum/classifier/checkpoints/SimpleNet_0609_23_48_04.ckpt");
-    PyObject* pTag=PyObject_CallObject(classifyFunction,args);
-    long tag=PyLong_AsLong(pTag);
-    Py_DecRef(pTag);
-    Py_DecRef(args);
-    //classify
+//    PyObject* classifierModule=PyImport_ImportModule("classifier");
+//    PyObject* classifyFunction=PyObject_GetAttrString(classifierModule,"eval");
+//    PyObject* args=Py_BuildValue("({s:i,s:s,s:s})","batch_size",1,"test_data_root","D:/magicAlbum/sharePool/poster","load_model_path","D:/magicAlbum/classifier/checkpoints/SimpleNet_0609_23_48_04.ckpt");
+//    PyObject* pTag=PyObject_CallObject(classifyFunction,args);
+//    long tag=PyLong_AsLong(pTag);
+//    Py_DecRef(pTag);
+//    Py_DecRef(args);
+//    //classify
 
-    qDebug()<<tag<<"classify img"<<clock()-beg;
-    beg=clock();
+//    qDebug()<<tag<<"classify img"<<clock()-beg;
+//    beg=clock();
 
-    return static_cast<int>(tag);
+//    return static_cast<int>(tag);
+    return 0;
 }
 TCHAR *CharToWchar(const QString &str)
 {
 QByteArray ba = str.toUtf8();
 char *data = ba.data(); //以上两步不能直接简化为“char *data = str.toUtf8().data();”
 int charLen = strlen(data);
-int len = MultiByteToWideChar(CP_ACP, 0, data, charLen, NULL, 0);
+int len = MultiByteToWideChar(CP_ACP, 0, data, charLen, nullptr, 0);
 TCHAR *buf = new TCHAR[len + 1];
 MultiByteToWideChar(CP_ACP, 0, data, charLen, buf, len);
 buf[len] = '\0';
@@ -45,7 +46,7 @@ void Transformer::transform(QString path){
     info.setFile(path);
     QString baseName=info.baseName();
     QString fileName=info.fileName();
-    QString dirName="D:/magicAlbum/warehouse";
+    QString dirName=WAREHOUSEPATH;
 
     STARTUPINFO stStartUpInfo;
     ::memset(&stStartUpInfo, 0 ,sizeof(stStartUpInfo));
@@ -66,12 +67,12 @@ void Transformer::transform(QString path){
     bool bRet = ::CreateProcess(
         szPath,
         szCmd,
-        NULL,
-        NULL,
+        nullptr,
+        nullptr,
         false,
         CREATE_NEW_CONSOLE,
-        NULL,
-        NULL,
+        nullptr,
+        nullptr,
         &stStartUpInfo,
         &stProcessInfo);
 
@@ -79,8 +80,8 @@ void Transformer::transform(QString path){
     {
         ::CloseHandle(stProcessInfo.hProcess);
         ::CloseHandle(stProcessInfo.hThread);
-        stProcessInfo.hProcess = NULL;
-        stProcessInfo.hThread = NULL;
+        stProcessInfo.hProcess = nullptr;
+        stProcessInfo.hThread = nullptr;
         stProcessInfo.dwProcessId = 0;
         stProcessInfo.dwThreadId = 0;
     }

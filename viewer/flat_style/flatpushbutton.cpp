@@ -2,6 +2,7 @@
 #include "ui_flatpushbutton.h"
 #include<QWidget>
 #include<QPushButton>
+#include"conf.h"
 
 FlatPushButton::FlatPushButton(QWidget *parent) :
     QWidget(parent),

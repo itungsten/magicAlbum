@@ -2,11 +2,11 @@
 #include "ui_fullscreen.h"
 #include "widget.h"
 #include "ui_widget.h"
-#include "Python.h"
 #include<QKeyEvent>
 #include<QImage>
 #include<Windows.h>
 #include<QDebug>
+#include"conf.h"
 
 FullScreen::FullScreen(QWidget *parent) :
     QWidget(parent),
@@ -123,19 +123,19 @@ bool FullScreen::openPipe()
 
     ::memset(&stProcessInfo, 0 ,sizeof(stProcessInfo));
 
-    TCHAR szPath[]=TEXT("D:/anaconda/envs/t031/pythonw.exe");
+    TCHAR szPath[]=TEXT( PYTHONWPATH );
 
-    TCHAR szCmd[]=TEXT(" D:/magicAlbum/classifier/client.py");
+    TCHAR szCmd[]=TEXT( CLIENTPATH );
 
     bool bRet = ::CreateProcess(
         szPath,
         szCmd,
-        NULL,
-        NULL,
+        nullptr,
+        nullptr,
         false,
         CREATE_NEW_CONSOLE,
-        NULL,
-        NULL,
+        nullptr,
+        nullptr,
         &stStartUpInfo,
         &stProcessInfo);
 
@@ -143,8 +143,8 @@ bool FullScreen::openPipe()
     {
 //        ::CloseHandle(stProcessInfo.hProcess);
 //        ::CloseHandle(stProcessInfo.hThread);
-//        stProcessInfo.hProcess = NULL;
-//        stProcessInfo.hThread = NULL;
+//        stProcessInfo.hProcess = nullptr;
+//        stProcessInfo.hThread = nullptr;
 //        stProcessInfo.dwProcessId = 0;
 //        stProcessInfo.dwThreadId = 0;
     }
@@ -156,7 +156,7 @@ bool FullScreen::openPipe()
     }
 
 
-    hPipe = NULL;
+    hPipe = nullptr;
     hPipe = CreateNamedPipe(
         EXAMP_PIPE,
         PIPE_ACCESS_DUPLEX,
@@ -167,7 +167,7 @@ bool FullScreen::openPipe()
         BUF_SIZE,
         BUF_SIZE,
         0,
-        NULL);
+        nullptr);
 
     if (hPipe==INVALID_HANDLE_VALUE)
     {
@@ -175,7 +175,7 @@ bool FullScreen::openPipe()
         return FALSE;
     }
 
-    if (!ConnectNamedPipe(hPipe, NULL))
+    if (!ConnectNamedPipe(hPipe, nullptr))
     {
         qDebug()<<"Connect Failed";
         return FALSE;

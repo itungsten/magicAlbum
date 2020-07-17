@@ -28,6 +28,8 @@
 #include<QDateTime>
 #include<QLabel>
 
+#include"conf.h"
+
 Widget::Widget(QWidget *parent)
     : QWidget(parent)
     , ui(new Ui::Widget)
@@ -116,7 +118,7 @@ Widget::Widget(QWidget *parent)
       //设置movie并开始播放，以刷新第一张Pixmap
 
 //      QFileInfo info(editor->target);
-//      full->anima=new QMovie(QString("D:/magicAlbum/warehouse/")+info.baseName()+"/result.gif");
+//      full->anima=new QMovie(QString(WAREHOUSEPATH)+info.baseName()+"/result.gif");
 //      full->ui->label->setMovie(full->anima);
 //      full->anima->start();
       //显示全屏窗口并且计时
@@ -153,7 +155,7 @@ Widget::Widget(QWidget *parent)
         DWORD dwReturn = 0;
         char szBuffer[BUF_SIZE] = {0};
         memset(szBuffer, 0, BUF_SIZE);
-        if(ReadFile(full->hPipe,szBuffer,BUF_SIZE,&dwReturn,NULL))
+        if(ReadFile(full->hPipe,szBuffer,BUF_SIZE,&dwReturn,nullptr))
         {
             QFileInfo info(editor->target);
             if(full->lastCode=='3'&&szBuffer[0]<='3')goto cont;
@@ -166,17 +168,17 @@ Widget::Widget(QWidget *parent)
             case '2':
             case '3':
                 full->lastCode='3';
-                full->anima=new QMovie(QString("D:/magicAlbum/warehouse/")+info.baseName()+"/unhappy.gif");
+                full->anima=new QMovie(QString(WAREHOUSEPATH)+info.baseName()+"/unhappy.gif");
                 break;
             case '4':
             case '5':
             case '6':
                 full->lastCode='5';
-                full->anima=new QMovie(QString("D:/magicAlbum/warehouse/")+info.baseName()+"/happy.gif");
+                full->anima=new QMovie(QString(WAREHOUSEPATH)+info.baseName()+"/happy.gif");
                 break;
             default:
                 full->lastCode='5';
-                full->anima=new QMovie(QString("D:/magicAlbum/warehouse/")+info.baseName()+"/happy.gif");
+                full->anima=new QMovie(QString(WAREHOUSEPATH)+info.baseName()+"/happy.gif");
                 break;
             }
             full->ui->label->setMovie(full->anima);
@@ -288,7 +290,6 @@ void Widget::setStatusBar()
 QSize Widget::getFullSize()
 {
     QPixmap first=editor->now->currentPixmap();//用以获取图片尺寸
-//    qDebug()<<full->size();
     int sx,sy; //size of x，size of y
     double rate;//伸缩比例
     sy=(full->size()).height();//高度为屏幕高度

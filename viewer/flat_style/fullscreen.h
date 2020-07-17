@@ -1,16 +1,11 @@
 #ifndef FULLSCREEN_H
 #define FULLSCREEN_H
-#define BUF_SIZE 65535
-#define EXAMP_PIPE   L"\\\\.\\pipe\\AlbumPipe"
-// 定义管道名 , 如果是跨网络通信 , 则在圆点处指定服务器端程序所在的主机名
-
 #include <QWidget>
 #include<QMovie>
 #include<QImage>
 #include<Windows.h>
 #include<QPainter>
-#define POSTERNAME "D:/magicAlbum/sharePool/poster/poster.png"
-#define PERSONNAME "D:/magicAlbum/sharePool/person.png"
+
 
 namespace Ui {
 class FullScreen;

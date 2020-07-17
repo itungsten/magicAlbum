@@ -2,6 +2,7 @@
 #include "ui_flatctrlbutton.h"
 #include<QMessageBox>
 #include<QWidget>
+#include"conf.h"
 
 FlatCtrlButton::FlatCtrlButton(QWidget *parent) :
     QWidget(parent),
